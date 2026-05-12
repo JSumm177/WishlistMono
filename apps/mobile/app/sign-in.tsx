@@ -31,7 +31,8 @@ export default function SignIn() {
       await setActive({ session: completeSignIn.createdSessionId });
       router.replace('/');
     } catch (err: any) {
-      alert(err.errors[0].message);
+      console.error("Sign in error", err);
+      alert("Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }

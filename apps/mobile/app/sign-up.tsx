@@ -36,7 +36,8 @@ export default function SignUp() {
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       setPendingVerification(true);
     } catch (err: any) {
-      alert(err.errors[0].message);
+      console.error("Sign up error", err);
+      alert("An error occurred during sign up. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,8 @@ export default function SignUp() {
       await setActive({ session: completeSignUp.createdSessionId });
       router.replace('/');
     } catch (err: any) {
-      alert(err.errors[0].message);
+      console.error("Verification error", err);
+      alert("Verification failed. Please check the code and try again.");
     } finally {
       setLoading(false);
     }
