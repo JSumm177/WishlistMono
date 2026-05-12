@@ -1,24 +1,41 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Image } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { insertVehicleSchema, type InsertVehicle } from '@wishlist/api/src/schemas/vehicle';
-import { trpc } from '../utils/trpc';
-import { useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  Image,
+} from "react-native";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  insertVehicleSchema,
+  type InsertVehicle,
+} from "@wishlist/api/src/schemas/vehicle";
+import { trpc } from "../utils/trpc";
+import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AddVehicle() {
   const router = useRouter();
   const utils = trpc.useUtils();
   const [image, setImage] = useState<string | null>(null);
 
-  const { control, handleSubmit, setValue, formState: { errors } } = useForm<InsertVehicle>({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<InsertVehicle>({
     resolver: zodResolver(insertVehicleSchema),
     defaultValues: {
       year: new Date().getFullYear(),
-      imageUrl: '',
-    }
+      imageUrl: "",
+    },
   });
 
   const addVehicle = trpc.addVehicle.useMutation({
@@ -41,7 +58,7 @@ export default function AddVehicle() {
       setImage(selectedImage);
       // In a real app, you would upload to UploadThing here
       // For now, we'll store the local URI to show it works
-      setValue('imageUrl', selectedImage);
+      setValue("imageUrl", selectedImage);
     }
   };
 
@@ -82,7 +99,9 @@ export default function AddVehicle() {
           />
         )}
       />
-      {errors.make && <Text style={styles.errorText}>{errors.make.message}</Text>}
+      {errors.make && (
+        <Text style={styles.errorText}>{errors.make.message}</Text>
+      )}
 
       <Text style={styles.label}>Model</Text>
       <Controller
@@ -98,7 +117,9 @@ export default function AddVehicle() {
           />
         )}
       />
-      {errors.model && <Text style={styles.errorText}>{errors.model.message}</Text>}
+      {errors.model && (
+        <Text style={styles.errorText}>{errors.model.message}</Text>
+      )}
 
       <View style={styles.row}>
         <View style={styles.flex1}>
@@ -115,7 +136,9 @@ export default function AddVehicle() {
               />
             )}
           />
-          {errors.year && <Text style={styles.errorText}>{errors.year.message}</Text>}
+          {errors.year && (
+            <Text style={styles.errorText}>{errors.year.message}</Text>
+          )}
         </View>
 
         <View style={styles.flex1}>
@@ -127,7 +150,7 @@ export default function AddVehicle() {
               <TextInput
                 style={styles.input}
                 onChangeText={(text) => onChange(parseFloat(text) || undefined)}
-                value={value?.toString() || ''}
+                value={value?.toString() || ""}
                 keyboardType="numeric"
                 placeholder="Optional"
               />
@@ -154,101 +177,101 @@ export default function AddVehicle() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   content: {
     padding: 20,
   },
   imagePicker: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 16 / 9,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderStyle: 'dashed',
+    borderColor: "#e5e7eb",
+    borderStyle: "dashed",
     marginBottom: 24,
-    overflow: 'hidden',
-    backgroundColor: '#f9fafb',
+    overflow: "hidden",
+    backgroundColor: "#f9fafb",
   },
   imagePlaceholder: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   imagePlaceholderText: {
     marginTop: 8,
-    color: '#6b7280',
+    color: "#6b7280",
     fontSize: 14,
   },
   imagePreviewContainer: {
     flex: 1,
-    position: 'relative',
+    position: "relative",
   },
   imagePreview: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   imageOverlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: "rgba(0,0,0,0.4)",
     paddingVertical: 8,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     gap: 8,
   },
   imageOverlayText: {
-    color: 'white',
+    color: "white",
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   label: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
-    color: '#374151',
+    color: "#374151",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: "#f9fafb",
   },
   inputError: {
-    borderColor: '#ef4444',
+    borderColor: "#ef4444",
   },
   errorText: {
-    color: '#ef4444',
+    color: "#ef4444",
     fontSize: 12,
     marginTop: -12,
     marginBottom: 12,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 15,
   },
   flex1: {
     flex: 1,
   },
   button: {
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

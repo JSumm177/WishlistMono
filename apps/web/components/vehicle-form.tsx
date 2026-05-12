@@ -2,7 +2,12 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertVehicleSchema, updateVehicleSchema, type InsertVehicle, type UpdateVehicle } from "@wishlist/api/src/schemas/vehicle";
+import {
+  insertVehicleSchema,
+  updateVehicleSchema,
+  type InsertVehicle,
+  type UpdateVehicle,
+} from "@wishlist/api/src/schemas/vehicle";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/navigation";
 import { UploadButton } from "../utils/uploadthing";
@@ -15,10 +20,16 @@ interface VehicleFormProps {
   onCancel?: () => void;
 }
 
-export function VehicleForm({ initialData, onSuccess, onCancel }: VehicleFormProps) {
+export function VehicleForm({
+  initialData,
+  onSuccess,
+  onCancel,
+}: VehicleFormProps) {
   const router = useRouter();
   const isEditing = !!initialData;
-  const [imageUrl, setImageUrl] = useState<string | undefined>(initialData?.imageUrl || undefined);
+  const [imageUrl, setImageUrl] = useState<string | undefined>(
+    initialData?.imageUrl || undefined,
+  );
 
   const {
     register,
@@ -27,7 +38,9 @@ export function VehicleForm({ initialData, onSuccess, onCancel }: VehicleFormPro
     setValue,
     formState: { errors },
   } = useForm<InsertVehicle | UpdateVehicle>({
-    resolver: zodResolver(isEditing ? updateVehicleSchema : insertVehicleSchema),
+    resolver: zodResolver(
+      isEditing ? updateVehicleSchema : insertVehicleSchema,
+    ),
     defaultValues: initialData || {
       year: new Date().getFullYear(),
     },
@@ -164,8 +177,8 @@ export function VehicleForm({ initialData, onSuccess, onCancel }: VehicleFormPro
           {addVehicle.isPending || updateVehicle.isPending
             ? "Saving..."
             : isEditing
-            ? "Update Vehicle"
-            : "Add to Wishlist"}
+              ? "Update Vehicle"
+              : "Add to Wishlist"}
         </button>
         {onCancel && (
           <button

@@ -5,7 +5,12 @@ let dbInstance: any = null;
 
 // Gating the database initialization for Node.js only.
 // This prevents the mobile app from trying to bundle better-sqlite3.
-if (typeof window === "undefined" && typeof process !== "undefined" && process.versions && process.versions.node) {
+if (
+  typeof window === "undefined" &&
+  typeof process !== "undefined" &&
+  process.versions &&
+  process.versions.node
+) {
   const Database = require("better-sqlite3");
   const { drizzle } = require("drizzle-orm/better-sqlite3");
   const path = require("path");

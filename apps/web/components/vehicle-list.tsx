@@ -28,7 +28,10 @@ export function VehicleList({ initialVehicles }: { initialVehicles: any[] }) {
   return (
     <div className="space-y-4">
       {vehicles.map((vehicle) => (
-        <div key={vehicle.id} className="p-4 border rounded-lg shadow-sm bg-white dark:bg-zinc-800">
+        <div
+          key={vehicle.id}
+          className="p-4 border rounded-lg shadow-sm bg-white dark:bg-zinc-800"
+        >
           {editingId === vehicle.id ? (
             <VehicleForm
               initialData={{
@@ -75,7 +78,10 @@ export function VehicleList({ initialVehicles }: { initialVehicles: any[] }) {
                   onClick={() => setEditingId(vehicle.id)}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-full"
                 >
-                  <Pencil size={18} className="text-gray-600 dark:text-gray-300" />
+                  <Pencil
+                    size={18}
+                    className="text-gray-600 dark:text-gray-300"
+                  />
                 </button>
                 <button
                   onClick={() => {

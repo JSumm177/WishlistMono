@@ -9,10 +9,11 @@ const handler = async (req: Request) => {
     endpoint: "/api/trpc",
     req,
     router: appRouter,
-    createContext: () => createTRPCContext({
-      headers: req.headers,
-      userId,
-    }),
+    createContext: () =>
+      createTRPCContext({
+        headers: req.headers,
+        userId,
+      }),
   });
 };
 

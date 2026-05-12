@@ -8,7 +8,9 @@ export const vehicles = sqliteTable("vehicles", {
   price: integer("price"), // Stored in cents
   imageUrl: text("image_url"),
   userId: text("user_id").notNull(), // Clerk User ID
-  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(() => new Date()),
+  createdAt: integer("created_at", { mode: "timestamp" }).$defaultFn(
+    () => new Date(),
+  ),
 });
 
 export type Vehicle = typeof vehicles.$inferSelect;

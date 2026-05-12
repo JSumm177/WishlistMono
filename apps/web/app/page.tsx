@@ -11,9 +11,9 @@ export default async function Home() {
     ? await db.select().from(vehicles).where(eq(vehicles.userId, userId))
     : [];
 
-  const allVehicles = rawVehicles.map(v => ({
+  const allVehicles = rawVehicles.map((v) => ({
     ...v,
-    price: v.price ? v.price / 100 : null
+    price: v.price ? v.price / 100 : null,
   }));
 
   return (
@@ -38,7 +38,9 @@ export default async function Home() {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Your Vehicles</h2>
           {!userId ? (
-            <p className="text-gray-500">Please sign in to see your wishlist.</p>
+            <p className="text-gray-500">
+              Please sign in to see your wishlist.
+            </p>
           ) : (
             <VehicleList initialVehicles={allVehicles} />
           )}

@@ -10,9 +10,9 @@ export const appRouter = router({
       .from(vehicles)
       .where(eq(vehicles.userId, ctx.userId));
 
-    return data.map(v => ({
+    return data.map((v) => ({
       ...v,
-      price: v.price ? v.price / 100 : null
+      price: v.price ? v.price / 100 : null,
     }));
   }),
   addVehicle: protectedProcedure
