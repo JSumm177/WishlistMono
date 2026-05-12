@@ -1,9 +1,17 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { useSignUp, useOAuth } from '@clerk/clerk-expo';
-import { useState, useCallback } from 'react';
-import { useRouter, Link } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
+import { useSignUp, useOAuth } from "@clerk/clerk-expo";
+import { useState, useCallback } from "react";
+import { useRouter, Link } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -11,14 +19,14 @@ export default function SignUp() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
 
-  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [emailAddress, setEmailAddress] = useState('');
-  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
   const onSignUpPress = async () => {
@@ -33,7 +41,7 @@ export default function SignUp() {
         password,
       });
 
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
     } catch (err: any) {
       console.error("Sign up error", err);
@@ -53,7 +61,7 @@ export default function SignUp() {
       });
 
       await setActive({ session: completeSignUp.createdSessionId });
-      router.replace('/');
+      router.replace("/");
     } catch (err: any) {
       console.error("Verification error", err);
       alert("Verification failed. Please check the code and try again.");
@@ -68,10 +76,10 @@ export default function SignUp() {
 
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
-        router.replace('/');
+        router.replace("/");
       }
     } catch (err) {
-      console.error('OAuth error', err);
+      console.error("OAuth error", err);
     }
   }, []);
 
@@ -108,7 +116,12 @@ export default function SignUp() {
       <Text style={styles.subtitle}>Join the vehicle wishlist</Text>
 
       <TouchableOpacity style={styles.googleButton} onPress={onGooglePress}>
-        <Ionicons name="logo-google" size={20} color="black" style={{ marginRight: 10 }} />
+        <Ionicons
+          name="logo-google"
+          size={20}
+          color="black"
+          style={{ marginRight: 10 }}
+        />
         <Text style={styles.googleButtonText}>Sign up with Google</Text>
       </TouchableOpacity>
 
@@ -177,78 +190,78 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 30,
   },
   googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     paddingVertical: 12,
     borderRadius: 10,
     marginBottom: 20,
   },
   googleButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: "#e5e7eb",
   },
   dividerText: {
     marginHorizontal: 10,
-    color: '#9ca3af',
+    color: "#9ca3af",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: "#d1d5db",
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: "#f9fafb",
   },
   button: {
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
   },
   linkText: {
-    color: '#2563eb',
-    fontWeight: 'bold',
-  }
+    color: "#2563eb",
+    fontWeight: "bold",
+  },
 });
