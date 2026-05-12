@@ -6,6 +6,7 @@
 # Next.js
 **/.next/
 **/out/
+.clerk/
 
 # Expo
 **/.expo/
@@ -17,6 +18,7 @@ android/
 *.p12
 *.key
 *.mobileprovision
+expo-env.d.ts
 
 # Turbo
 .turbo
