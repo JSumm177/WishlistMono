@@ -1,11 +1,17 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { useSignUp } from '@clerk/clerk-expo';
-import { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useSignUp, useOAuth } from '@clerk/clerk-expo';
+import { useState, useCallback } from 'react';
+import { useRouter, Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function SignUp() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
+
+  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -15,7 +21,6 @@ export default function SignUp() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Start the sign-up process
   const onSignUpPress = async () => {
     if (!isLoaded) return;
     setLoading(true);
@@ -28,10 +33,7 @@ export default function SignUp() {
         password,
       });
 
-      // Send the email verification code
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
-
-      // Change the UI to verify the email address
       setPendingVerification(true);
     } catch (err: any) {
       alert(err.errors[0].message);
@@ -40,7 +42,6 @@ export default function SignUp() {
     }
   };
 
-  // Verify the email address
   const onPressVerify = async () => {
     if (!isLoaded) return;
     setLoading(true);
@@ -58,6 +59,19 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
+  const onGooglePress = useCallback(async () => {
+    try {
+      const { createdSessionId, setActive } = await startOAuthFlow();
+
+      if (createdSessionId) {
+        setActive!({ session: createdSessionId });
+        router.replace('/');
+      }
+    } catch (err) {
+      console.error('OAuth error', err);
+    }
+  }, []);
 
   if (pendingVerification) {
     return (
@@ -90,6 +104,17 @@ export default function SignUp() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Create Account</Text>
       <Text style={styles.subtitle}>Join the vehicle wishlist</Text>
+
+      <TouchableOpacity style={styles.googleButton} onPress={onGooglePress}>
+        <Ionicons name="logo-google" size={20} color="black" style={{ marginRight: 10 }} />
+        <Text style={styles.googleButtonText}>Sign up with Google</Text>
+      </TouchableOpacity>
+
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>or</Text>
+        <View style={styles.dividerLine} />
+      </View>
 
       <TextInput
         value={firstName}
@@ -133,6 +158,15 @@ export default function SignUp() {
           <Text style={styles.buttonText}>Sign Up</Text>
         )}
       </TouchableOpacity>
+
+      <View style={styles.footer}>
+        <Text>Already have an account? </Text>
+        <Link href="/sign-in" asChild>
+          <TouchableOpacity>
+            <Text style={styles.linkText}>Sign In</Text>
+          </TouchableOpacity>
+        </Link>
+      </View>
     </ScrollView>
   );
 }
@@ -153,6 +187,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginBottom: 30,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  googleButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#e5e7eb',
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: '#9ca3af',
   },
   input: {
     borderWidth: 1,
@@ -178,4 +240,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  linkText: {
+    color: '#2563eb',
+    fontWeight: 'bold',
+  }
 });
