@@ -4,12 +4,12 @@
 .pnp.js
 
 # Next.js
-/.next/
-/out/
+**/.next/
+**/out/
 
 # Expo
-.expo/
-/dist/
+**/.expo/
+**/dist/
 web-build/
 ios/
 android/
