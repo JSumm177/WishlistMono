@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useSignIn } from '@clerk/clerk-expo';
 import { useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, Link } from 'expo-router';
 
 export default function SignIn() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -62,6 +62,15 @@ export default function SignIn() {
           <Text style={styles.buttonText}>Sign In</Text>
         )}
       </TouchableOpacity>
+
+      <View style={styles.footer}>
+        <Text>Don't have an account? </Text>
+        <Link href="/sign-up" asChild>
+          <TouchableOpacity>
+            <Text style={styles.linkText}>Sign Up</Text>
+          </TouchableOpacity>
+        </Link>
+      </View>
     </View>
   );
 }
@@ -107,4 +116,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  linkText: {
+    color: '#2563eb',
+    fontWeight: 'bold',
+  }
 });

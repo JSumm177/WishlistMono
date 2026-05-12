@@ -86,7 +86,12 @@ export default function Home() {
           <Text style={styles.subtitle}>Sign in to start your collection</Text>
           <Link href="/sign-in" asChild>
             <TouchableOpacity style={styles.primaryButton}>
-              <Text style={styles.buttonText}>Get Started</Text>
+              <Text style={styles.buttonText}>Sign In</Text>
+            </TouchableOpacity>
+          </Link>
+          <Link href="/sign-up" asChild>
+            <TouchableOpacity style={[styles.secondaryButton, { marginTop: 10 }]}>
+              <Text style={styles.secondaryButtonText}>Create Account</Text>
             </TouchableOpacity>
           </Link>
         </View>
@@ -146,6 +151,18 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  secondaryButton: {
+    paddingHorizontal: 40,
+    paddingVertical: 15,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#2563eb',
+  },
+  secondaryButtonText: {
+    color: '#2563eb',
     fontSize: 16,
     fontWeight: 'bold',
   },
