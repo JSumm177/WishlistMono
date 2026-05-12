@@ -1,7 +1,10 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { db } from "@wishlist/db";
 
-export const createTRPCContext = async (opts: { headers: Headers; userId: string | null }) => {
+export const createTRPCContext = async (opts: {
+  headers: Headers;
+  userId: string | null;
+}) => {
   return {
     db,
     userId: opts.userId,
