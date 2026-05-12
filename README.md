@@ -1,59 +1,87 @@
 # WishlistMono
 
-Developing a vehicle wishlist app is a great way to bridge the gap between heavy-duty enterprise systems and the fast-moving "DX" (Developer Experience) tools currently dominating the startup and product-focused sectors.
-
-Since you're already well-versed in established stacks like Java/Spring and AWS, these suggestions focus on **type-safe coordination**, **edge-ready performance**, and **unified mobile/web workflows**.
+A full-stack, type-safe vehicle wishlist monorepo built with modern "DX-first" tools. This project bridges the gap between web and mobile using a shared data layer and type-safe API.
 
 ---
 
-## 1. The "T3-Adjacent" Web Stack
+## 🏗 Stack Architecture
 
-The industry is moving away from separate frontend and backend repositories for product-focused apps, favoring "monorepo" styles that share types from the database to the UI.
-
-* **Next.js 15 (App Router):** The current standard for React. It uses **Server Components** to fetch data on the server, reducing the JavaScript bundle sent to the client.
-* **Drizzle ORM:** A lightweight, TypeScript-first ORM. Unlike older alternatives, it's non-blocking and offers "SQL-like" syntax with perfect type inference.
-* **tRPC:** This allows you to call backend functions directly from your frontend with full TypeScript intellisense, eliminating the need to manually define API endpoints or fetch patterns.
-* **Shadcn/ui:** Not a component library in the traditional sense, but a collection of re-usable components you "own" (copy-paste into your project). It’s built on **Tailwind CSS** and **Radix UI**.
-
----
-
-## 2. Cross-Platform Mobile
-
-For a vehicle wishlist, you likely want native features (like a camera for snapping car photos or push notifications for price drops).
-
-* **Expo (React Native Framework):** Expo has matured significantly. With **Expo Router**, you can use file-based routing (similar to Next.js) to build for iOS, Android, and Web simultaneously.
-* **Tamagui:** A style system that optimizes your CSS-in-JS for native performance. It allows you to share 100% of your styling logic between the web wishlist and the mobile app.
-
----
-
-## 3. Modern Data & Real-time
-
-Instead of managing heavy RDS instances for a side project, serverless and "local-first" databases are the current trend for high-velocity development.
-
-* **Turso (SQLite at the Edge):** Based on libSQL, it’s incredibly fast and can be replicated globally to minimize latency.
-* **Supabase:** An "Open Source Firebase" alternative. It provides a **PostgreSQL** database, Auth, and File Storage (for vehicle images) out of the box with a very clean SDK.
-* **Convex:** A newer "backend-as-a-service" that replaces the database and API layer with reactive functions. If the data in the database changes, the UI updates instantly without web-sockets configuration.
-
----
-
-## 4. Specialized Tooling
-
-* **Clerk:** Currently the "gold standard" for Auth. It handles social logins, multi-factor, and user profiles with a few lines of code, saving you weeks of security boilerplate.
-* **Uploadthing:** A specialized tool for handling image uploads (car photos) in Next.js or Expo without having to manually configure S3 buckets and permissions.
-* **Resend:** A modern email API that uses React templates (React Email) to send beautiful transactional emails when a "dream car" is added to the wishlist.
-
----
-
-### Suggested Architecture for Your Wishlist App
-
-| Layer | Technology Recommendation |
+| Layer | Technology |
 | --- | --- |
-| **Frontend** | Next.js 15 (Web) / Expo (Mobile) |
-| **Language** | TypeScript (Strict Mode) |
-| **Database** | Turso (Edge SQLite) or Neon (Serverless Postgres) |
-| **Authentication** | Clerk |
-| **Deployment** | Vercel (Frontend/Edge) |
+| **Monorepo** | Turborepo + pnpm Workspaces |
+| **Web** | Next.js 15 (App Router) |
+| **Mobile** | Expo SDK 51 (React Native) |
+| **API** | tRPC (Type-safe communication) |
+| **Database** | Drizzle ORM + SQLite (local) / Turso (production) |
+| **Validation** | Zod (Shared schemas) |
+| **Auth** | Clerk (Unified web/mobile identity) |
 
-This stack shifts the focus from "writing boilerplate" to "shipping features," which is a refreshing change of pace if you're used to more verbose, configuration-heavy environments.
+---
 
-Since you're planning this across mobile and web, would you prefer to keep them in a single Monorepo (sharing code) or build them as two separate projects?
+## 🚀 Getting Started
+
+### 1. Prerequisites
+- [Node.js 20+](https://nodejs.org/)
+- [pnpm 9+](https://pnpm.io/)
+- [Expo Go](https://expo.dev/go) (for physical device testing)
+
+### 2. Installation
+Install all dependencies from the root:
+```bash
+pnpm install
+```
+
+### 3. Environment Setup
+Create a `.env.local` file in `apps/web/` and a `.env` file in `apps/mobile/` with your Clerk credentials:
+
+**`apps/web/.env.local`**
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+```
+
+**`apps/mobile/.env`**
+```bash
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+```
+
+### 4. Database Initialization
+Initialize your local SQLite database and sync the schema:
+```bash
+pnpm --filter @wishlist/db db:push
+```
+
+### 5. Running the Development Environment
+
+#### Run everything (Web + API + DB):
+```bash
+pnpm dev
+```
+- **Web App**: [http://localhost:3000](http://localhost:3000)
+- **DB Studio**: `pnpm --filter @wishlist/db db:studio` (GUI to view data)
+
+#### Run Mobile App:
+```bash
+cd apps/mobile
+npx expo start --clear
+```
+- **Simulator**: Press `i` for iOS or `a` for Android.
+- **Physical Device**: Scan the QR code in the terminal using the Expo Go app.
+- **Note**: If using a physical device, update the tRPC URL in `apps/mobile/app/_layout.tsx` to your computer's local IP address.
+
+---
+
+## 📦 Project Structure
+
+- `apps/web`: Next.js 15 dashboard with vehicle CRUD and Clerk integration.
+- `apps/mobile`: Expo application sharing API and types.
+- `packages/api`: tRPC router and shared Zod validation schemas.
+- `packages/db`: Drizzle ORM configuration and database schema.
+
+---
+
+## 🛠 Key Features Implemented
+- [x] **Type-Safe CRUD**: Adding, Editing, and Deleting vehicles updates both Web and Mobile.
+- [x] **Universal Validation**: One Zod schema rules both the Web form and the API.
+- [x] **Secure Auth**: Clerk middleware protection on both platforms.
+- [x] **Currency Handling**: Intelligent Dollar-to-Cent conversion between UI and Database.
