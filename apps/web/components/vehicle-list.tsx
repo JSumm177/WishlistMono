@@ -4,6 +4,7 @@ import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import { VehicleForm } from "./vehicle-form";
 import { Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
 
 export function VehicleList({ initialVehicles }: { initialVehicles: any[] }) {
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -36,20 +37,39 @@ export function VehicleList({ initialVehicles }: { initialVehicles: any[] }) {
                 model: vehicle.model,
                 year: vehicle.year,
                 price: vehicle.price ?? undefined,
+                imageUrl: vehicle.imageUrl ?? undefined,
               }}
               onSuccess={() => setEditingId(null)}
               onCancel={() => setEditingId(null)}
             />
           ) : (
-            <div className="flex justify-between items-center">
-              <div>
-                <h3 className="text-xl font-bold">{vehicle.year} {vehicle.make} {vehicle.model}</h3>
+            <div className="flex gap-4 items-center">
+              {vehicle.imageUrl ? (
+                <div className="relative w-24 h-16 rounded-md overflow-hidden flex-shrink-0">
+                  <Image
+                    src={vehicle.imageUrl}
+                    alt={`${vehicle.make} ${vehicle.model}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-24 h-16 bg-gray-100 dark:bg-zinc-700 rounded-md flex items-center justify-center text-xs text-gray-400">
+                  No Image
+                </div>
+              )}
+
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold truncate">
+                  {vehicle.year} {vehicle.make} {vehicle.model}
+                </h3>
                 {vehicle.price && (
                   <p className="text-gray-600 dark:text-gray-400">
                     ${vehicle.price.toLocaleString()}
                   </p>
                 )}
               </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={() => setEditingId(vehicle.id)}

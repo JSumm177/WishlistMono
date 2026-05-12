@@ -5,6 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertVehicleSchema, updateVehicleSchema, type InsertVehicle, type UpdateVehicle } from "@wishlist/api/src/schemas/vehicle";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/navigation";
+import { UploadButton } from "../utils/uploadthing";
+import Image from "next/image";
+import { useState } from "react";
 
 interface VehicleFormProps {
   initialData?: UpdateVehicle;
@@ -15,11 +18,13 @@ interface VehicleFormProps {
 export function VehicleForm({ initialData, onSuccess, onCancel }: VehicleFormProps) {
   const router = useRouter();
   const isEditing = !!initialData;
+  const [imageUrl, setImageUrl] = useState<string | undefined>(initialData?.imageUrl || undefined);
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<InsertVehicle | UpdateVehicle>({
     resolver: zodResolver(isEditing ? updateVehicleSchema : insertVehicleSchema),
@@ -33,6 +38,7 @@ export function VehicleForm({ initialData, onSuccess, onCancel }: VehicleFormPro
   const addVehicle = trpc.addVehicle.useMutation({
     onSuccess: () => {
       reset();
+      setImageUrl(undefined);
       utils.getVehicles.invalidate();
       router.refresh();
       onSuccess?.();
@@ -60,6 +66,46 @@ export function VehicleForm({ initialData, onSuccess, onCancel }: VehicleFormPro
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-4 p-6 border rounded-xl bg-gray-50 dark:bg-zinc-900"
     >
+      <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-4 mb-4">
+        {imageUrl ? (
+          <div className="relative w-full aspect-video mb-4 overflow-hidden rounded-lg">
+            <Image
+              src={imageUrl}
+              alt="Vehicle preview"
+              fill
+              className="object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setImageUrl(undefined);
+                setValue("imageUrl", "");
+              }}
+              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full text-xs"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <div className="text-center">
+            <p className="text-sm text-gray-500 mb-2">Upload vehicle photo</p>
+            <UploadButton
+              endpoint="vehicleImage"
+              onClientUploadComplete={(res) => {
+                const url = res?.[0]?.url;
+                if (url) {
+                  setImageUrl(url);
+                  setValue("imageUrl", url);
+                }
+              }}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
+          </div>
+        )}
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Make</label>

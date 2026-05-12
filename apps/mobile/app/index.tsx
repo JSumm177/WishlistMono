@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert, Image } from 'react-native';
 import { trpc } from '../utils/trpc';
 import { useAuth, useUser, SignedIn, SignedOut } from '@clerk/clerk-expo';
 import { Link } from 'expo-router';
@@ -55,12 +55,21 @@ export default function Home() {
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <View style={styles.card}>
+                {item.imageUrl ? (
+                  <Image source={{ uri: item.imageUrl }} style={styles.cardImage} />
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Ionicons name="car-outline" size={24} color="#9ca3af" />
+                  </View>
+                )}
+
                 <View style={styles.cardContent}>
-                  <Text style={styles.vehicleTitle}>{item.year} {item.make} {item.model}</Text>
+                  <Text style={styles.vehicleTitle} numberOfLines={1}>{item.year} {item.make} {item.model}</Text>
                   {item.price && (
                     <Text style={styles.vehiclePrice}>${item.price.toLocaleString()}</Text>
                   )}
                 </View>
+
                 <View style={styles.cardActions}>
                   <TouchableOpacity
                     onPress={() => handleDelete(item.id)}
@@ -171,7 +180,6 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: 'white',
-    padding: 15,
     borderRadius: 12,
     marginBottom: 12,
     flexDirection: 'row',
@@ -181,21 +189,35 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    overflow: 'hidden',
+  },
+  cardImage: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#f3f4f6',
+  },
+  imagePlaceholder: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardContent: {
     flex: 1,
+    paddingHorizontal: 12,
   },
   vehicleTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   vehiclePrice: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#4b5563',
-    marginTop: 4,
+    marginTop: 2,
   },
   cardActions: {
-    paddingLeft: 10,
+    paddingRight: 10,
   },
   actionButton: {
     padding: 8,

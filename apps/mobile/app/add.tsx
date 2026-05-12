@@ -1,18 +1,23 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView, Image } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { insertVehicleSchema, type InsertVehicle } from '@wishlist/api/src/schemas/vehicle';
 import { trpc } from '../utils/trpc';
 import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function AddVehicle() {
   const router = useRouter();
   const utils = trpc.useUtils();
+  const [image, setImage] = useState<string | null>(null);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<InsertVehicle>({
+  const { control, handleSubmit, setValue, formState: { errors } } = useForm<InsertVehicle>({
     resolver: zodResolver(insertVehicleSchema),
     defaultValues: {
       year: new Date().getFullYear(),
+      imageUrl: '',
     }
   });
 
@@ -23,12 +28,46 @@ export default function AddVehicle() {
     },
   });
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      const selectedImage = result.assets[0].uri;
+      setImage(selectedImage);
+      // In a real app, you would upload to UploadThing here
+      // For now, we'll store the local URI to show it works
+      setValue('imageUrl', selectedImage);
+    }
+  };
+
   const onSubmit = (data: InsertVehicle) => {
     addVehicle.mutate(data);
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+        {image ? (
+          <View style={styles.imagePreviewContainer}>
+            <Image source={{ uri: image }} style={styles.imagePreview} />
+            <View style={styles.imageOverlay}>
+              <Ionicons name="camera" size={24} color="white" />
+              <Text style={styles.imageOverlayText}>Change Photo</Text>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.imagePlaceholder}>
+            <Ionicons name="camera-outline" size={40} color="#9ca3af" />
+            <Text style={styles.imagePlaceholderText}>Add Vehicle Photo</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
       <Text style={styles.label}>Make</Text>
       <Controller
         control={control}
@@ -119,6 +158,52 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+  },
+  imagePicker: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderStyle: 'dashed',
+    marginBottom: 24,
+    overflow: 'hidden',
+    backgroundColor: '#f9fafb',
+  },
+  imagePlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imagePlaceholderText: {
+    marginTop: 8,
+    color: '#6b7280',
+    fontSize: 14,
+  },
+  imagePreviewContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    paddingVertical: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  imageOverlayText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   label: {
     fontSize: 16,
