@@ -6,25 +6,21 @@ const workspaceRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
-// 1. Watch all files within the monorepo
+// Watch all files in the monorepo
 config.watchFolders = [workspaceRoot];
 
-// 2. Let Metro know where to resolve packages and in what order
+// Resolve modules from both local and root node_modules
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
-// 3. Force resolve native modules directly to prevent bundling issues
-config.resolver.extraNodeModules = {
-  '@babel/runtime': path.resolve(projectRoot, 'node_modules/@babel/runtime'),
-  '@clerk/clerk-expo': path.resolve(projectRoot, 'node_modules/@clerk/clerk-expo'),
-  'expo-crypto': path.resolve(projectRoot, 'node_modules/expo-crypto'),
-  'expo-secure-store': path.resolve(projectRoot, 'node_modules/expo-secure-store'),
-};
-
-// 4. Critical: Enable symlinks for pnpm
+// Force pnpm compatibility
 config.resolver.unstable_enableSymlinks = true;
-config.resolver.unstable_enablePackageExports = true;
+
+// Ensure we don't try to resolve node native modules for the mobile app
+config.resolver.blockList = [
+  /.*\/packages\/db\/node_modules\/.*/,
+];
 
 module.exports = config;
