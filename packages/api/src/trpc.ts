@@ -7,7 +7,6 @@ export const createTRPCContext = async (opts: {
 }) => {
   return {
     db,
-    userId: opts.userId,
     ...opts,
   };
 };
