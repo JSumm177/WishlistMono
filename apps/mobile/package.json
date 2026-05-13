@@ -8,7 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "next lint"
+    "lint": "expo lint"
   },
   "dependencies": {
     "@babel/runtime": "^7.29.2",
