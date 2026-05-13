@@ -122,8 +122,9 @@ export function VehicleForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Make</label>
+          <label htmlFor="make" className="block text-sm font-medium mb-1">Make</label>
           <input
+            id="make"
             {...register("make")}
             className="w-full p-2 border rounded dark:bg-black"
             placeholder="e.g. Porsche"
@@ -133,8 +134,9 @@ export function VehicleForm({
           )}
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Model</label>
+          <label htmlFor="model" className="block text-sm font-medium mb-1">Model</label>
           <input
+            id="model"
             {...register("model")}
             className="w-full p-2 border rounded dark:bg-black"
             placeholder="e.g. 911 GT3"
@@ -147,8 +149,9 @@ export function VehicleForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Year</label>
+          <label htmlFor="year" className="block text-sm font-medium mb-1">Year</label>
           <input
+            id="year"
             type="number"
             {...register("year", { valueAsNumber: true })}
             className="w-full p-2 border rounded dark:bg-black"
@@ -158,8 +161,9 @@ export function VehicleForm({
           )}
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Price (USD)</label>
+          <label htmlFor="price" className="block text-sm font-medium mb-1">Price (USD)</label>
           <input
+            id="price"
             type="number"
             step="0.01"
             {...register("price", { valueAsNumber: true })}
