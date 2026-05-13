@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useSignUp, useOAuth } from "@clerk/clerk-expo";
 import { useState, useCallback } from "react";
@@ -45,7 +46,7 @@ export default function SignUp() {
       setPendingVerification(true);
     } catch (err: any) {
       console.error("Sign up error", err);
-      alert("An error occurred during sign up. Please try again.");
+      Alert.alert("Error", "An error occurred during sign up. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -64,7 +65,7 @@ export default function SignUp() {
       router.replace("/");
     } catch (err: any) {
       console.error("Verification error", err);
-      alert("Verification failed. Please check the code and try again.");
+      Alert.alert("Error", "Verification failed. Please check the code and try again.");
     } finally {
       setLoading(false);
     }

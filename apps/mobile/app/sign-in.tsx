@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useSignIn, useOAuth } from "@clerk/clerk-expo";
 import { useState, useCallback } from "react";
@@ -39,7 +40,7 @@ export default function SignIn() {
       router.replace("/");
     } catch (err: any) {
       console.error("Sign in error", err);
-      alert("Invalid email or password. Please try again.");
+      Alert.alert("Error", "Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -112,7 +112,8 @@ export function VehicleForm({
                 }
               }}
               onUploadError={(error: Error) => {
-                alert(`ERROR! ${error.message}`);
+                console.error("Upload error:", error);
+                alert("Upload failed. Please try again with a smaller image.");
               }}
             />
           </div>
