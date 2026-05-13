@@ -16,14 +16,29 @@ import {
 } from "@wishlist/api/src/schemas/vehicle";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useImageUploader } from "../utils/uploadthing";
+import { Alert } from "react-native";
 
 export default function AddVehicle() {
   const router = useRouter();
   const utils = trpc.useUtils();
   const [image, setImage] = useState<string | null>(null);
+
+  const { openImagePicker, isUploading } = useImageUploader("vehicleImage", {
+    onClientUploadComplete: (res) => {
+      const url = res?.[0]?.url;
+      if (url) {
+        setImage(url);
+        setValue("imageUrl", url);
+      }
+    },
+    onUploadError: (error) => {
+      console.error("Upload error:", error);
+      Alert.alert("Error", "Failed to upload image. Please try again.");
+    },
+  });
 
   const {
     control,
@@ -46,20 +61,9 @@ export default function AddVehicle() {
   });
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [16, 9],
-      quality: 0.7,
+    await openImagePicker({
+      source: "library",
     });
-
-    if (!result.canceled) {
-      const selectedImage = result.assets[0].uri;
-      setImage(selectedImage);
-      // In a real app, you would upload to UploadThing here
-      // For now, we'll store the local URI to show it works
-      setValue("imageUrl", selectedImage);
-    }
   };
 
   const onSubmit = (data: InsertVehicle) => {
@@ -68,8 +72,17 @@ export default function AddVehicle() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-        {image ? (
+      <TouchableOpacity
+        style={styles.imagePicker}
+        onPress={pickImage}
+        disabled={isUploading}
+      >
+        {isUploading ? (
+          <View style={styles.imagePlaceholder}>
+            <ActivityIndicator size="large" color="#2563eb" />
+            <Text style={styles.imagePlaceholderText}>Uploading...</Text>
+          </View>
+        ) : image ? (
           <View style={styles.imagePreviewContainer}>
             <Image source={{ uri: image }} style={styles.imagePreview} />
             <View style={styles.imageOverlay}>
@@ -160,9 +173,9 @@ export default function AddVehicle() {
       </View>
 
       <TouchableOpacity
-        style={[styles.button, addVehicle.isPending && styles.buttonDisabled]}
+        style={[styles.button, (addVehicle.isPending || isUploading) && styles.buttonDisabled]}
         onPress={handleSubmit(onSubmit)}
-        disabled={addVehicle.isPending}
+        disabled={addVehicle.isPending || isUploading}
       >
         {addVehicle.isPending ? (
           <ActivityIndicator color="white" />
