@@ -87,7 +87,7 @@ export default function SignUp() {
         setActive!({ session: createdSessionId });
         router.replace("/");
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("OAuth error", err);
     }
   }, []);
