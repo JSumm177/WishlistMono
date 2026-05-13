@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useSignIn, useOAuth } from "@clerk/clerk-expo";
+import { useSignIn, useOAuth, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { useState, useCallback } from "react";
 import { useRouter, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -38,8 +38,12 @@ export default function SignIn() {
 
       await setActive({ session: completeSignIn.createdSessionId });
       router.replace("/");
-    } catch (err: any) {
-      console.error("Sign in error", err);
+    } catch (err: unknown) {
+      if (isClerkAPIResponseError(err)) {
+        console.error("Sign in error", err.errors);
+      } else {
+        console.error("Sign in error", err);
+      }
       Alert.alert("Error", "Invalid email or password. Please try again.");
     } finally {
       setLoading(false);

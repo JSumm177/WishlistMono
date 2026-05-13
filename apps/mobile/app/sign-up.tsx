@@ -8,7 +8,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useSignUp, useOAuth } from "@clerk/clerk-expo";
+import { useSignUp, useOAuth, isClerkAPIResponseError } from "@clerk/clerk-expo";
 import { useState, useCallback } from "react";
 import { useRouter, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,8 +44,12 @@ export default function SignUp() {
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
-    } catch (err: any) {
-      console.error("Sign up error", err);
+    } catch (err: unknown) {
+      if (isClerkAPIResponseError(err)) {
+        console.error("Sign up error", err.errors);
+      } else {
+        console.error("Sign up error", err);
+      }
       Alert.alert("Error", "An error occurred during sign up. Please try again.");
     } finally {
       setLoading(false);
@@ -63,8 +67,12 @@ export default function SignUp() {
 
       await setActive({ session: completeSignUp.createdSessionId });
       router.replace("/");
-    } catch (err: any) {
-      console.error("Verification error", err);
+    } catch (err: unknown) {
+      if (isClerkAPIResponseError(err)) {
+        console.error("Verification error", err.errors);
+      } else {
+        console.error("Verification error", err);
+      }
       Alert.alert("Error", "Verification failed. Please check the code and try again.");
     } finally {
       setLoading(false);
