@@ -54,6 +54,24 @@ describe("appRouter", () => {
       expect(mockFrom).toHaveBeenCalledWith(vehicles);
       expect(mockWhere).toHaveBeenCalled();
     });
+
+    it("should return an empty array if the user has no vehicles", async () => {
+      const mockWhere = jest.fn().mockResolvedValue([]);
+      const mockFrom = jest.fn().mockReturnValue({ where: mockWhere });
+      const mockSelect = jest.fn().mockReturnValue({ from: mockFrom });
+
+      (db.select as jest.Mock).mockImplementation(mockSelect);
+
+      const caller = appRouter.createCaller({
+        db: db as any,
+        userId: mockUserId,
+        headers: mockHeaders,
+      });
+
+      const result = await caller.getVehicles();
+
+      expect(result).toEqual([]);
+    });
   });
 
   describe("deleteVehicle", () => {
