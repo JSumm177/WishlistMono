@@ -5,10 +5,12 @@ import { TRPCError } from "@trpc/server";
 jest.mock("@wishlist/db", () => ({
   db: {
     delete: jest.fn(),
+    select: jest.fn(),
   },
   vehicles: {
     id: "id",
     userId: "userId",
+    price: "price",
   },
   eq: jest.fn(),
   and: jest.fn(),
@@ -20,6 +22,38 @@ describe("appRouter", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe("getVehicles", () => {
+    it("should return vehicles with correctly formatted prices, handling nulls", async () => {
+      const mockVehicles = [
+        { id: 1, make: "Porsche", model: "911", price: 12000000 }, // $120,000.00
+        { id: 2, make: "Toyota", model: "AE86", price: null },
+      ];
+
+      const mockWhere = jest.fn().mockResolvedValue(mockVehicles);
+      const mockFrom = jest.fn().mockReturnValue({ where: mockWhere });
+      const mockSelect = jest.fn().mockReturnValue({ from: mockFrom });
+
+      (db.select as jest.Mock).mockImplementation(mockSelect);
+
+      const caller = appRouter.createCaller({
+        db: db as any,
+        userId: mockUserId,
+        headers: mockHeaders,
+      });
+
+      const result = await caller.getVehicles();
+
+      expect(result).toEqual([
+        { id: 1, make: "Porsche", model: "911", price: 120000 },
+        { id: 2, make: "Toyota", model: "AE86", price: null },
+      ]);
+
+      expect(db.select).toHaveBeenCalled();
+      expect(mockFrom).toHaveBeenCalledWith(vehicles);
+      expect(mockWhere).toHaveBeenCalled();
+    });
   });
 
   describe("deleteVehicle", () => {
