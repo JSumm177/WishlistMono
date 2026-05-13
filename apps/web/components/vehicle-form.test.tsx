@@ -45,7 +45,14 @@ jest.mock("next/navigation", () => ({
 
 // Mock uploadthing
 jest.mock("../utils/uploadthing", () => ({
-  UploadButton: () => <div data-testid="upload-button" />,
+  UploadButton: ({ onClientUploadComplete }: any) => (
+    <button
+      data-testid="upload-button"
+      onClick={() => onClientUploadComplete([{ url: "https://example.com/image.jpg" }])}
+    >
+      Upload
+    </button>
+  ),
 }));
 
 describe("VehicleForm", () => {
@@ -77,6 +84,41 @@ describe("VehicleForm", () => {
 
       await waitFor(() => {
         expect(screen.getByText(/Number must be greater than or equal to 1900/i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("Upload", () => {
+    it("should update image preview when upload is complete", async () => {
+      render(<VehicleForm />);
+
+      const uploadButton = screen.getByTestId("upload-button");
+      fireEvent.click(uploadButton);
+
+      await waitFor(() => {
+        expect(screen.getByAltText(/vehicle preview/i)).toBeInTheDocument();
+        const src = screen.getByAltText(/vehicle preview/i).getAttribute("src");
+        expect(decodeURIComponent(src || "")).toContain("example.com/image.jpg");
+      });
+    });
+
+    it("should remove image preview when remove button is clicked", async () => {
+      render(<VehicleForm />);
+
+      // First upload
+      fireEvent.click(screen.getByTestId("upload-button"));
+
+      await waitFor(() => {
+        expect(screen.getByAltText(/vehicle preview/i)).toBeInTheDocument();
+      });
+
+      // Then remove
+      const removeButton = screen.getByRole("button", { name: /remove/i });
+      fireEvent.click(removeButton);
+
+      await waitFor(() => {
+        expect(screen.queryByAltText(/vehicle preview/i)).not.toBeInTheDocument();
+        expect(screen.getByText(/upload vehicle photo/i)).toBeInTheDocument();
       });
     });
   });
