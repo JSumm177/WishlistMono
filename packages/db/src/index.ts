@@ -16,15 +16,20 @@ if (
   const path = require("path");
   const fs = require("fs");
 
+  let projectRootCache: string | null = null;
   const getProjectRoot = () => {
+    if (projectRootCache) return projectRootCache;
+
     let curr = __dirname;
     while (curr !== path.parse(curr).root) {
       if (fs.existsSync(path.join(curr, "pnpm-workspace.yaml"))) {
+        projectRootCache = curr;
         return curr;
       }
       curr = path.dirname(curr);
     }
-    return process.cwd();
+    projectRootCache = process.cwd();
+    return projectRootCache;
   };
 
   const dbPath = path.join(getProjectRoot(), "packages/db/local.db");
