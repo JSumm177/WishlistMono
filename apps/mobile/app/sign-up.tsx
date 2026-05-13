@@ -8,7 +8,8 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useSignUp, useOAuth, isClerkAPIResponseError } from "@clerk/clerk-expo";
+import { useSignUp } from "@clerk/expo/legacy";
+import { useOAuth, isClerkAPIResponseError } from "@clerk/expo";
 import { useState, useCallback } from "react";
 import { useRouter, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -35,18 +36,26 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      await signUp.create({
+      const response = await signUp.create({
         firstName,
         lastName,
         emailAddress,
         password,
       });
 
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      setPendingVerification(true);
+      if (response.status === "missing_requirements") {
+        await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+        setPendingVerification(true);
+      } else {
+        console.warn("Unexpected sign up status:", response.status);
+        Alert.alert(
+          "Additional Steps Required",
+          "Your sign up requires additional steps not supported here. Please continue on the web.",
+        );
+      }
     } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
-        console.error("Sign up error", err.errors);
+        console.error("Sign up error", JSON.stringify((err as any).errors, null, 2));
       } else {
         console.error("Sign up error", err);
       }
@@ -65,11 +74,19 @@ export default function SignUp() {
         code,
       });
 
-      await setActive({ session: completeSignUp.createdSessionId });
-      router.replace("/");
+      if (completeSignUp.status === "complete") {
+        await setActive({ session: completeSignUp.createdSessionId });
+        router.replace("/");
+      } else {
+        console.warn("Incomplete sign up status:", completeSignUp.status);
+        Alert.alert(
+          "Verification Incomplete",
+          "Your verification is not yet complete. Please follow the instructions provided by Clerk.",
+        );
+      }
     } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
-        console.error("Verification error", err.errors);
+        console.error("Verification error", JSON.stringify((err as any).errors, null, 2));
       } else {
         console.error("Verification error", err);
       }

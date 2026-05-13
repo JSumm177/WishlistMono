@@ -36,19 +36,27 @@ pnpm install
 
 ### 3. Environment Setup
 
-Create a `.env.local` file in `apps/web/` and a `.env` file in `apps/mobile/` with your Clerk credentials:
+Create a `.env.local` file in `apps/web/` and a `.env` file in `apps/mobile/` with your Clerk and UploadThing credentials:
 
 **`apps/web/.env.local`**
 
 ```bash
+# Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
+
+# UploadThing
+UPLOADTHING_TOKEN=...
 ```
 
 **`apps/mobile/.env`**
 
 ```bash
+# Clerk
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+
+# UploadThing (Set to your local IP for physical device testing)
+EXPO_PUBLIC_SERVER_URL=http://localhost:3000
 ```
 
 ### 4. Database Initialization

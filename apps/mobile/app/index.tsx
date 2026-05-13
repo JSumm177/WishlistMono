@@ -9,7 +9,7 @@ import {
   Image,
 } from "react-native";
 import { trpc } from "../utils/trpc";
-import { useAuth, useUser, SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { useAuth, useUser, Show } from "@clerk/expo";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -51,7 +51,7 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <SignedIn>
+      <Show when="signed-in">
         <View style={styles.header}>
           <Text style={styles.welcome}>Hi, {user?.firstName || "User"}</Text>
           <Link href="/add" asChild>
@@ -109,9 +109,9 @@ export default function Home() {
             style={styles.list}
           />
         )}
-      </SignedIn>
+      </Show>
 
-      <SignedOut>
+      <Show when="signed-out">
         <View style={styles.centered}>
           <Ionicons name="car-sport" size={80} color="#ccc" />
           <Text style={styles.title}>Vehicle Wishlist</Text>
@@ -129,7 +129,7 @@ export default function Home() {
             </TouchableOpacity>
           </Link>
         </View>
-      </SignedOut>
+      </Show>
     </View>
   );
 }

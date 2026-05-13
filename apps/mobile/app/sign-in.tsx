@@ -7,7 +7,8 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useSignIn, useOAuth, isClerkAPIResponseError } from "@clerk/clerk-expo";
+import { useSignIn } from "@clerk/expo/legacy";
+import { useOAuth, isClerkAPIResponseError } from "@clerk/expo";
 import { useState, useCallback } from "react";
 import { useRouter, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -36,11 +37,24 @@ export default function SignIn() {
         password,
       });
 
-      await setActive({ session: completeSignIn.createdSessionId });
-      router.replace("/");
+      if (completeSignIn.status === "complete") {
+        await setActive({ session: completeSignIn.createdSessionId });
+        router.replace("/");
+      } else if (completeSignIn.status === "needs_client_trust") {
+        Alert.alert(
+          "Verification Required",
+          "This device needs to be verified. Please check your email for instructions or sign in on a known device.",
+        );
+      } else {
+        console.warn("Unhandled sign in status:", completeSignIn.status);
+        Alert.alert(
+          "Additional Steps Required",
+          "Your account requires additional setup that is not yet supported in the mobile app. Please sign in on the web to continue.",
+        );
+      }
     } catch (err: unknown) {
       if (isClerkAPIResponseError(err)) {
-        console.error("Sign in error", err.errors);
+        console.error("Sign in error", JSON.stringify((err as any).errors, null, 2));
       } else {
         console.error("Sign in error", err);
       }
