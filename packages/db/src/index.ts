@@ -1,7 +1,9 @@
+import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+
 export * from "drizzle-orm";
 export * from "./schema";
 
-let dbInstance: any = null;
+let dbInstance: BetterSQLite3Database | null = null;
 
 // Gating the database initialization for Node.js only.
 // This prevents the mobile app from trying to bundle better-sqlite3.
@@ -37,4 +39,4 @@ if (
   dbInstance = drizzle(sqlite);
 }
 
-export const db = dbInstance;
+export const db = dbInstance as BetterSQLite3Database;
