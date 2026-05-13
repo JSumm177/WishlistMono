@@ -66,11 +66,11 @@ export function VehicleForm({
     },
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: InsertVehicle | UpdateVehicle) => {
     if (isEditing) {
-      updateVehicle.mutate(data);
+      updateVehicle.mutate(data as UpdateVehicle);
     } else {
-      addVehicle.mutate(data);
+      addVehicle.mutate(data as InsertVehicle);
     }
   };
 
