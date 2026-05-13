@@ -1,5 +1,6 @@
-import { createTRPCContext } from "./trpc";
+import { createTRPCContext, protectedProcedure, router } from "./trpc";
 import { db } from "@wishlist/db";
+import { TRPCError } from "@trpc/server";
 
 jest.mock("@wishlist/db", () => ({
   db: {
@@ -34,5 +35,34 @@ describe("createTRPCContext", () => {
     });
 
     expect(context.userId).toBeNull();
+  });
+});
+
+describe("protectedProcedure", () => {
+  const testRouter = router({
+    test: protectedProcedure.query(() => "ok"),
+  });
+
+  it("should allow access when userId is present", async () => {
+    const caller = testRouter.createCaller({
+      db: db as any,
+      userId: "user_123",
+      headers: new Headers(),
+    });
+
+    const result = await caller.test();
+    expect(result).toBe("ok");
+  });
+
+  it("should throw UNAUTHORIZED when userId is missing", async () => {
+    const caller = testRouter.createCaller({
+      db: db as any,
+      userId: null,
+      headers: new Headers(),
+    });
+
+    await expect(caller.test()).rejects.toThrow(
+      new TRPCError({ code: "UNAUTHORIZED" }),
+    );
   });
 });
