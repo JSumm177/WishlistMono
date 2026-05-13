@@ -5,8 +5,9 @@ import { trpc } from "../utils/trpc";
 import { VehicleForm } from "./vehicle-form";
 import { Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { type Vehicle } from "@wishlist/db";
 
-export function VehicleList({ initialVehicles }: { initialVehicles: any[] }) {
+export function VehicleList({ initialVehicles }: { initialVehicles: Vehicle[] }) {
   const [editingId, setEditingId] = useState<number | null>(null);
 
   // Use tRPC to manage the list state (syncs with Server Component data)
