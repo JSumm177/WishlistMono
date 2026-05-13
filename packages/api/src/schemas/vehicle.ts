@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const insertVehicleSchema = z.object({
-  make: z.string().min(1, "Make is required"),
-  model: z.string().min(1, "Model is required"),
+  make: z.string({ required_error: "Make is required" }).min(1, "Make is required"),
+  model: z.string({ required_error: "Model is required" }).min(1, "Model is required"),
   year: z
-    .number()
+    .number({ required_error: "Year is required" })
     .int()
     .min(1900)
     .max(new Date().getFullYear() + 1),

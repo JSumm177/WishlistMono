@@ -12,7 +12,7 @@ import { trpc } from "../utils/trpc";
 import { useRouter } from "next/navigation";
 import { UploadButton } from "../utils/uploadthing";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useId } from "react";
 
 interface VehicleFormProps {
   initialData?: UpdateVehicle;
@@ -26,6 +26,7 @@ export function VehicleForm({
   onCancel,
 }: VehicleFormProps) {
   const router = useRouter();
+  const formId = useId();
   const isEditing = !!initialData;
   const [imageUrl, setImageUrl] = useState<string | undefined>(
     initialData?.imageUrl || undefined,
@@ -41,8 +42,12 @@ export function VehicleForm({
     resolver: zodResolver(
       isEditing ? updateVehicleSchema : insertVehicleSchema,
     ),
-    defaultValues: initialData || {
+    values: initialData || {
+      make: "",
+      model: "",
       year: new Date().getFullYear(),
+      price: undefined,
+      imageUrl: "",
     },
   });
 
@@ -79,6 +84,7 @@ export function VehicleForm({
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-4 p-6 border rounded-xl bg-gray-50 dark:bg-zinc-900"
     >
+      {isEditing && <input type="hidden" {...register("id")} />}
       <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-4 mb-4">
         {imageUrl ? (
           <div className="relative w-full aspect-video mb-4 overflow-hidden rounded-lg">
@@ -122,9 +128,9 @@ export function VehicleForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="make" className="block text-sm font-medium mb-1">Make</label>
+          <label htmlFor={`${formId}-make`} className="block text-sm font-medium mb-1">Make</label>
           <input
-            id="make"
+            id={`${formId}-make`}
             {...register("make")}
             className="w-full p-2 border rounded dark:bg-black"
             placeholder="e.g. Porsche"
@@ -134,9 +140,9 @@ export function VehicleForm({
           )}
         </div>
         <div>
-          <label htmlFor="model" className="block text-sm font-medium mb-1">Model</label>
+          <label htmlFor={`${formId}-model`} className="block text-sm font-medium mb-1">Model</label>
           <input
-            id="model"
+            id={`${formId}-model`}
             {...register("model")}
             className="w-full p-2 border rounded dark:bg-black"
             placeholder="e.g. 911 GT3"
@@ -149,9 +155,9 @@ export function VehicleForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="year" className="block text-sm font-medium mb-1">Year</label>
+          <label htmlFor={`${formId}-year`} className="block text-sm font-medium mb-1">Year</label>
           <input
-            id="year"
+            id={`${formId}-year`}
             type="number"
             {...register("year", { valueAsNumber: true })}
             className="w-full p-2 border rounded dark:bg-black"
@@ -161,9 +167,9 @@ export function VehicleForm({
           )}
         </div>
         <div>
-          <label htmlFor="price" className="block text-sm font-medium mb-1">Price (USD)</label>
+          <label htmlFor={`${formId}-price`} className="block text-sm font-medium mb-1">Price (USD)</label>
           <input
-            id="price"
+            id={`${formId}-price`}
             type="number"
             step="0.01"
             {...register("price", { valueAsNumber: true })}
