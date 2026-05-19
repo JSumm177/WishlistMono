@@ -10,9 +10,7 @@ export const ourFileRouter = {
       if (!userId) throw new Error("Unauthorized");
       return { userId };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for userId:", metadata.userId);
-      console.log("File URL:", file.url);
+    .onUploadComplete(async ({ metadata }) => {
       return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
