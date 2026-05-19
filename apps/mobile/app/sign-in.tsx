@@ -8,8 +8,9 @@ import {
   Alert,
 } from "react-native";
 import { useSignIn } from "@clerk/expo/legacy";
-import { useOAuth, isClerkAPIResponseError } from "@clerk/expo";
+import { useOAuth } from "@clerk/expo";
 import { useState, useCallback } from "react";
+import { logClerkError } from "../utils/errors";
 import { useRouter, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
@@ -53,11 +54,7 @@ export default function SignIn() {
         );
       }
     } catch (err: unknown) {
-      if (isClerkAPIResponseError(err)) {
-        console.error("Sign in error", JSON.stringify((err as any).errors, null, 2));
-      } else {
-        console.error("Sign in error", err);
-      }
+      logClerkError(err, "Sign in error");
       Alert.alert("Error", "Invalid email or password. Please try again.");
     } finally {
       setLoading(false);
