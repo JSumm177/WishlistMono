@@ -9,8 +9,9 @@ import {
   Alert,
 } from "react-native";
 import { useSignUp } from "@clerk/expo/legacy";
-import { useOAuth, isClerkAPIResponseError } from "@clerk/expo";
+import { useOAuth } from "@clerk/expo";
 import { useState, useCallback } from "react";
+import { logClerkError } from "../utils/errors";
 import { useRouter, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
@@ -44,7 +45,9 @@ export default function SignUp() {
       });
 
       if (response.status === "missing_requirements") {
-        await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+        await signUp.prepareEmailAddressVerification({
+          strategy: "email_code",
+        });
         setPendingVerification(true);
       } else {
         console.warn("Unexpected sign up status:", response.status);
@@ -54,12 +57,11 @@ export default function SignUp() {
         );
       }
     } catch (err: unknown) {
-      if (isClerkAPIResponseError(err)) {
-        console.error("Sign up error", JSON.stringify((err as any).errors, null, 2));
-      } else {
-        console.error("Sign up error", err);
-      }
-      Alert.alert("Error", "An error occurred during sign up. Please try again.");
+      logClerkError(err, "Sign up error");
+      Alert.alert(
+        "Error",
+        "An error occurred during sign up. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -85,12 +87,11 @@ export default function SignUp() {
         );
       }
     } catch (err: unknown) {
-      if (isClerkAPIResponseError(err)) {
-        console.error("Verification error", JSON.stringify((err as any).errors, null, 2));
-      } else {
-        console.error("Verification error", err);
-      }
-      Alert.alert("Error", "Verification failed. Please check the code and try again.");
+      logClerkError(err, "Verification error");
+      Alert.alert(
+        "Error",
+        "Verification failed. Please check the code and try again.",
+      );
     } finally {
       setLoading(false);
     }

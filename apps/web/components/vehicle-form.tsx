@@ -128,7 +128,12 @@ export function VehicleForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor={`${formId}-make`} className="block text-sm font-medium mb-1">Make</label>
+          <label
+            htmlFor={`${formId}-make`}
+            className="block text-sm font-medium mb-1"
+          >
+            Make
+          </label>
           <input
             id={`${formId}-make`}
             {...register("make")}
@@ -140,7 +145,12 @@ export function VehicleForm({
           )}
         </div>
         <div>
-          <label htmlFor={`${formId}-model`} className="block text-sm font-medium mb-1">Model</label>
+          <label
+            htmlFor={`${formId}-model`}
+            className="block text-sm font-medium mb-1"
+          >
+            Model
+          </label>
           <input
             id={`${formId}-model`}
             {...register("model")}
@@ -155,7 +165,12 @@ export function VehicleForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor={`${formId}-year`} className="block text-sm font-medium mb-1">Year</label>
+          <label
+            htmlFor={`${formId}-year`}
+            className="block text-sm font-medium mb-1"
+          >
+            Year
+          </label>
           <input
             id={`${formId}-year`}
             type="number"
@@ -167,7 +182,12 @@ export function VehicleForm({
           )}
         </div>
         <div>
-          <label htmlFor={`${formId}-price`} className="block text-sm font-medium mb-1">Price (USD)</label>
+          <label
+            htmlFor={`${formId}-price`}
+            className="block text-sm font-medium mb-1"
+          >
+            Price (USD)
+          </label>
           <input
             id={`${formId}-price`}
             type="number"

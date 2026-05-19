@@ -23,7 +23,9 @@ describe("tokenCache", () => {
     });
 
     it("should return null if SecureStore.getItemAsync throws an error", async () => {
-      (SecureStore.getItemAsync as jest.Mock).mockRejectedValue(new Error("Storage error"));
+      (SecureStore.getItemAsync as jest.Mock).mockRejectedValue(
+        new Error("Storage error"),
+      );
       const result = await tokenCache.getToken(key);
       expect(result).toBeNull();
     });
@@ -37,7 +39,9 @@ describe("tokenCache", () => {
     });
 
     it("should return undefined if SecureStore.setItemAsync throws an error", async () => {
-      (SecureStore.setItemAsync as jest.Mock).mockRejectedValue(new Error("Storage error"));
+      (SecureStore.setItemAsync as jest.Mock).mockRejectedValue(
+        new Error("Storage error"),
+      );
       const result = await tokenCache.saveToken(key, value);
       expect(result).toBeUndefined();
     });

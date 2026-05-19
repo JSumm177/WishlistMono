@@ -173,7 +173,10 @@ export default function AddVehicle() {
       </View>
 
       <TouchableOpacity
-        style={[styles.button, (addVehicle.isPending || isUploading) && styles.buttonDisabled]}
+        style={[
+          styles.button,
+          (addVehicle.isPending || isUploading) && styles.buttonDisabled,
+        ]}
         onPress={handleSubmit(onSubmit)}
         disabled={addVehicle.isPending || isUploading}
       >
