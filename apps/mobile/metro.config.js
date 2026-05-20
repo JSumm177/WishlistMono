@@ -1,3 +1,4 @@
+/* eslint-env node */
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
@@ -17,6 +18,8 @@ config.resolver.nodeModulesPaths = [
 
 // Force pnpm compatibility
 config.resolver.unstable_enableSymlinks = true;
+config.resolver.unstable_enablePackageExports = true;
+
 
 // Ensure we don't try to resolve node native modules for the mobile app
 config.resolver.blockList = [

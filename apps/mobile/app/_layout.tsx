@@ -5,6 +5,7 @@ import { trpc } from "../utils/trpc";
 import { Stack } from "expo-router";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "../utils/cache";
+import { Platform } from "react-native";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
@@ -13,8 +14,6 @@ if (!publishableKey) {
     "Clerk Publishable Key is missing. Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment.",
   );
 }
-
-import { Platform } from "react-native";
 
 function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { getToken } = useAuth();

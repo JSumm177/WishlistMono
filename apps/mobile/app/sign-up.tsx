@@ -8,8 +8,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { useSignUp } from "@clerk/expo/legacy";
-import { useOAuth } from "@clerk/expo";
+import { useSignUp, useOAuth } from "@clerk/clerk-expo";
 import { useState, useCallback } from "react";
 import { logClerkError } from "../utils/errors";
 import { useRouter, Link } from "expo-router";

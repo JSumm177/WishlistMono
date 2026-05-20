@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { trpc } from "../utils/trpc";
-import { useAuth, useUser, Show } from "@clerk/clerk-expo";
+import { useAuth, useUser, SignedIn, SignedOut } from "@clerk/clerk-expo";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { MarketAnalysis } from "../components/market-analysis";
@@ -21,7 +21,6 @@ export default function Home() {
   const {
     data: vehicles,
     isLoading,
-    error,
     refetch,
   } = trpc.getVehicles.useQuery(undefined, {
     enabled: !!userId,
@@ -59,7 +58,7 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <Show when="signed-in">
+      <SignedIn>
         <View style={styles.header}>
           <Text style={styles.welcome}>Hi, {user?.firstName || "User"}</Text>
           <Link href="/add" asChild>
@@ -176,9 +175,9 @@ export default function Home() {
             style={styles.list}
           />
         )}
-      </Show>
+      </SignedIn>
 
-      <Show when="signed-out">
+      <SignedOut>
         <View style={styles.centered}>
           <Ionicons name="car-sport" size={80} color="#ccc" />
           <Text style={styles.title}>Vehicle Wishlist</Text>
@@ -196,7 +195,7 @@ export default function Home() {
             </TouchableOpacity>
           </Link>
         </View>
-      </Show>
+      </SignedOut>
     </View>
   );
 }

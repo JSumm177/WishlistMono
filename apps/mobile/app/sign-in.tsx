@@ -7,8 +7,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { useSignIn } from "@clerk/expo/legacy";
-import { useOAuth } from "@clerk/expo";
+import { useSignIn, useOAuth } from "@clerk/clerk-expo";
 import { useState, useCallback } from "react";
 import { logClerkError } from "../utils/errors";
 import { useRouter, Link } from "expo-router";
