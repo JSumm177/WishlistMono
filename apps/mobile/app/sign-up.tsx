@@ -106,7 +106,7 @@ export default function SignUp() {
         router.replace("/");
       }
     } catch (err: unknown) {
-      console.error("OAuth error", err);
+      logClerkError(err, "OAuth error");
     }
   }, []);
 
