@@ -69,20 +69,27 @@ pnpm --filter @wishlist/db db:push
 
 ### 5. Running the Development Environment
 
-#### Run everything (Web + API + DB):
+#### Run the Full Stack (Web + Mobile Dev Server):
 
+From the root directory, running:
 ```bash
 pnpm dev
 ```
-
+will concurrently boot up:
 - **Web App**: [http://localhost:3000](http://localhost:3000)
-- **DB Studio**: `pnpm --filter @wishlist/db db:studio` (GUI to view data)
+- **Mobile Metro Bundler**: Port `8083` (to avoid clashing with RefWikiMono on `8081`)
 
-#### Run Mobile App:
+*If you only want to run the web app, you can run:*
+```bash
+pnpm --filter web dev
+```
 
+#### Run the Mobile App Individually:
+
+If you prefer to start the mobile app dev server manually on the custom port:
 ```bash
 cd apps/mobile
-npx expo start --clear
+pnpm start --clear
 ```
 
 - **Simulator**: Press `i` for iOS or `a` for Android.
