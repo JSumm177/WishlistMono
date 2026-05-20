@@ -2,7 +2,7 @@ import { isClerkAPIResponseError } from "@clerk/expo";
 
 export function logClerkError(err: unknown, contextMessage: string) {
   if (isClerkAPIResponseError(err)) {
-    const safeErrors = err.errors.map((e) => ({
+    const safeErrors = (err as any).errors.map((e: any) => ({
       code: e.code,
       message: e.message,
       longMessage: e.longMessage,
