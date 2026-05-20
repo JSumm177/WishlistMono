@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   View,
   Text,
@@ -9,9 +10,10 @@ import {
   Image,
 } from "react-native";
 import { trpc } from "../utils/trpc";
-import { useAuth, useUser, Show } from "@clerk/expo";
+import { useAuth, useUser, Show } from "@clerk/clerk-expo";
 import { Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { MarketAnalysis } from "../components/market-analysis";
 
 export default function Home() {
   const { isLoaded, userId } = useAuth();
@@ -31,6 +33,12 @@ export default function Home() {
       utils.getVehicles.invalidate();
     },
   });
+
+  const [expandedIds, setExpandedIds] = useState<Record<number, boolean>>({});
+
+  const toggleExpanded = (id: number) => {
+    setExpandedIds((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   const handleDelete = (id: number) => {
     Alert.alert(
@@ -67,40 +75,99 @@ export default function Home() {
           <FlatList
             data={vehicles}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.card}>
-                {item.imageUrl ? (
-                  <Image
-                    source={{ uri: item.imageUrl }}
-                    style={styles.cardImage}
-                  />
-                ) : (
-                  <View style={styles.imagePlaceholder}>
-                    <Ionicons name="car-outline" size={24} color="#9ca3af" />
-                  </View>
-                )}
+            renderItem={({ item }) => {
+              const isExpanded = !!expandedIds[item.id];
+              const avgMarket = item.averageMarketPrice;
+              const price = item.price;
+              
+              // Decide pill styles
+              let pillStyle = styles.grayMarketPill;
+              let pillTextStyle = styles.grayMarketPillText;
+              
+              if (avgMarket && price) {
+                if (price < avgMarket) {
+                  pillStyle = styles.greenMarketPill;
+                  pillTextStyle = styles.greenMarketPillText;
+                } else {
+                  pillStyle = styles.amberMarketPill;
+                  pillTextStyle = styles.amberMarketPillText;
+                }
+              }
 
-                <View style={styles.cardContent}>
-                  <Text style={styles.vehicleTitle} numberOfLines={1}>
-                    {item.year} {item.make} {item.model}
-                  </Text>
-                  {item.price && (
-                    <Text style={styles.vehiclePrice}>
-                      ${item.price.toLocaleString()}
-                    </Text>
+              return (
+                <View style={styles.card}>
+                  <View style={styles.cardMainRow}>
+                    {item.imageUrl ? (
+                      <Image
+                        source={{ uri: item.imageUrl }}
+                        style={styles.cardImage}
+                      />
+                    ) : (
+                      <View style={styles.imagePlaceholder}>
+                        <Ionicons name="car-outline" size={24} color="#9ca3af" />
+                      </View>
+                    )}
+
+                    <View style={styles.cardContent}>
+                      <Text style={styles.vehicleTitle} numberOfLines={1}>
+                        {item.year} {item.make} {item.model}
+                      </Text>
+                      
+                      <View style={styles.pricingRow}>
+                        {price && (
+                          <Text style={styles.vehiclePrice}>
+                            ${price.toLocaleString()}
+                          </Text>
+                        )}
+                        
+                        {avgMarket ? (
+                          <View style={[styles.marketPill, pillStyle]}>
+                            <Text style={[styles.marketPillText, pillTextStyle]}>
+                              Avg: ${Math.round(avgMarket).toLocaleString()}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
+
+                      {/* Expand/Collapse Toggle Button */}
+                      <TouchableOpacity
+                        onPress={() => toggleExpanded(item.id)}
+                        style={styles.analysisToggle}
+                      >
+                        <Ionicons
+                          name={isExpanded ? "trending-down" : "trending-up"}
+                          size={12}
+                          color="#2563eb"
+                          style={styles.toggleIcon}
+                        />
+                        <Text style={styles.analysisToggleText}>
+                          {isExpanded ? "Hide Analysis" : "Market Analysis"}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.cardActions}>
+                      <TouchableOpacity
+                        onPress={() => handleDelete(item.id)}
+                        style={styles.actionButton}
+                      >
+                        <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {/* Render Market Analysis accordion */}
+                  {isExpanded && (
+                    <View style={styles.expandedContainer}>
+                      <MarketAnalysis
+                        vehicleId={item.id}
+                        wishlistPrice={price ?? null}
+                      />
+                    </View>
                   )}
                 </View>
-
-                <View style={styles.cardActions}>
-                  <TouchableOpacity
-                    onPress={() => handleDelete(item.id)}
-                    style={styles.actionButton}
-                  >
-                    <Ionicons name="trash-outline" size={20} color="#ef4444" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
+              );
+            }}
             ListEmptyComponent={
               <Text style={styles.empty}>No vehicles found.</Text>
             }
@@ -207,8 +274,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 12,
     marginBottom: 12,
-    flexDirection: "row",
-    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -216,14 +281,18 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: "hidden",
   },
+  cardMainRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   cardImage: {
-    width: 80,
-    height: 80,
+    width: 90,
+    height: 90,
     backgroundColor: "#f3f4f6",
   },
   imagePlaceholder: {
-    width: 80,
-    height: 80,
+    width: 90,
+    height: 90,
     backgroundColor: "#f3f4f6",
     justifyContent: "center",
     alignItems: "center",
@@ -231,18 +300,78 @@ const styles = StyleSheet.create({
   cardContent: {
     flex: 1,
     paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   vehicleTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
+    color: "#111827",
+  },
+  pricingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    marginTop: 4,
   },
   vehiclePrice: {
     fontSize: 14,
+    fontWeight: "800",
+    color: "#111827",
+  },
+  marketPill: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginLeft: 6,
+    borderWidth: 0.5,
+  },
+  marketPillText: {
+    fontSize: 9,
+    fontWeight: "700",
+  },
+  greenMarketPill: {
+    backgroundColor: "#ecfdf5",
+    borderColor: "#a7f3d0",
+  },
+  greenMarketPillText: {
+    color: "#047857",
+  },
+  amberMarketPill: {
+    backgroundColor: "#fffbeb",
+    borderColor: "#fde68a",
+  },
+  amberMarketPillText: {
+    color: "#b45309",
+  },
+  grayMarketPill: {
+    backgroundColor: "#f3f4f6",
+    borderColor: "#e5e7eb",
+  },
+  grayMarketPillText: {
     color: "#4b5563",
-    marginTop: 2,
+  },
+  analysisToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: "#d1d5db",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignSelf: "flex-start",
+    marginTop: 8,
+    backgroundColor: "#f9fafb",
+  },
+  toggleIcon: {
+    marginRight: 4,
+  },
+  analysisToggleText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#2563eb",
   },
   cardActions: {
-    paddingRight: 10,
+    paddingRight: 12,
   },
   actionButton: {
     padding: 8,
@@ -255,5 +384,11 @@ const styles = StyleSheet.create({
   },
   loader: {
     marginTop: 50,
+  },
+  expandedContainer: {
+    borderTopWidth: 1,
+    borderTopColor: "#f3f4f6",
+    paddingHorizontal: 12,
+    paddingBottom: 12,
   },
 });

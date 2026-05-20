@@ -14,6 +14,8 @@ export default async function Home() {
   const allVehicles = rawVehicles.map((v) => ({
     ...v,
     price: v.price ? v.price / 100 : null,
+    createdAt: v.createdAt ? v.createdAt.toISOString() : null,
+    averageMarketPrice: null,
   }));
 
   return (

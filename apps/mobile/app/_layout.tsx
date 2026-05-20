@@ -3,7 +3,7 @@ import { httpBatchLink } from "@trpc/client";
 import { useState } from "react";
 import { trpc } from "../utils/trpc";
 import { Stack } from "expo-router";
-import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/expo";
+import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "../utils/cache";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
@@ -14,15 +14,19 @@ if (!publishableKey) {
   );
 }
 
+import { Platform } from "react-native";
+
 function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { getToken } = useAuth();
   const [queryClient] = useState(() => new QueryClient());
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
+  const [trpcClient] = useState(() => {
+    const rawUrl = process.env.EXPO_PUBLIC_SERVER_URL || "http://localhost:3000";
+    const serverUrl = Platform.OS === "android" ? rawUrl.replace("localhost", "10.0.2.2") : rawUrl;
+    
+    return trpc.createClient({
       links: [
         httpBatchLink({
-          // If testing on physical device, replace localhost with your computer's IP
-          url: "http://localhost:3000/api/trpc",
+          url: `${serverUrl}/api/trpc`,
           async headers() {
             const token = await getToken();
             return {
@@ -31,8 +35,8 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
           },
         }),
       ],
-    }),
-  );
+    });
+  });
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
