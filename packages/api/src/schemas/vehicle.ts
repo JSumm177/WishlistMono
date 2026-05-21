@@ -7,6 +7,7 @@ export const insertVehicleSchema = z.object({
   model: z
     .string({ required_error: "Model is required" })
     .min(1, "Model is required"),
+  trim: z.string().optional().or(z.literal("")),
   year: z
     .number({ required_error: "Year is required" })
     .int()

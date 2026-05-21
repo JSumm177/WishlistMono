@@ -98,6 +98,42 @@ pnpm start --clear
 
 ---
 
+## 🧪 Manual Verification & Testing Environment
+
+To manually verify that everything functions correctly across the entire stack, follow these steps to spin up the Web, iOS, and Android environments concurrently:
+
+### 1. Fire up the Core Development Servers
+
+From the root of the project, start all local development environments:
+```bash
+pnpm dev
+```
+This boots up the **Next.js Web App / tRPC API Server** on [http://localhost:3000](http://localhost:3000) and the **Expo Metro Bundler** on port `8083`.
+
+### 2. Launch the Web Environment
+1. Navigate to [http://localhost:3000](http://localhost:3000) in your web browser.
+2. Sign in or register an account.
+3. Verify adding, editing, and deleting vehicles. Confirm that the Make/Model dropdown options adapt dynamically when changing the modelyear.
+
+### 3. Launch the iOS Test Environment (Simulator)
+1. Ensure Xcode is installed.
+2. In the terminal window running the Expo Metro Bundler, press **`i`** to trigger the iOS simulator, or run directly:
+   ```bash
+   pnpm --filter mobile ios
+   ```
+3. The simulator will boot up, install the Expo client, and open the Mobile app.
+4. Sign in using the same credentials as Web and check list synchronization.
+
+### 4. Launch the Android Test Environment (Emulator)
+1. Ensure Android Studio is installed and an AVD (Android Virtual Device) is running.
+2. In the Expo Metro Bundler terminal window, press **`a`** to load the app in the Android emulator, or run directly:
+   ```bash
+   pnpm --filter mobile android
+   ```
+3. Sign in to confirm database syncing.
+
+---
+
 ## 📦 Project Structure
 
 - `apps/web`: Next.js 15 dashboard with vehicle CRUD and Clerk integration.

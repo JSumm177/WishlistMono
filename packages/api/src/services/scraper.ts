@@ -5,8 +5,9 @@
  */
 
 // Generate platform-specific search URLs
-export function getPlatformSearchUrls(year: number, make: string, model: string) {
-  const query = encodeURIComponent(`${year} ${make} ${model}`);
+export function getPlatformSearchUrls(year: number, make: string, model: string, trim?: string | null) {
+  const trimStr = trim ? ` ${trim.trim()}` : "";
+  const query = encodeURIComponent(`${year} ${make} ${model}${trimStr}`);
   
   return {
     cargurus: `https://www.cargurus.com/Cars/searchResults.action?searchZip=02138&nonRqmtsPageFormat=true&shopByFq=true&term=${query}`,
@@ -20,8 +21,9 @@ export function getPlatformSearchUrls(year: number, make: string, model: string)
 // Generate a stable, cryptographic-style deterministic offset for a source
 // This ensures that the generated prices are stable and consistent on every fetch,
 // while still displaying realistic differences across the five platforms.
-function getDeterministicOffset(year: number, make: string, model: string, source: string): number {
-  const str = `${year}-${make}-${model}-${source}`.toLowerCase();
+function getDeterministicOffset(year: number, make: string, model: string, trim: string | null, source: string): number {
+  const trimStr = trim ? `-${trim.trim()}` : "";
+  const str = `${year}-${make}-${model}${trimStr}-${source}`.toLowerCase();
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -31,7 +33,7 @@ function getDeterministicOffset(year: number, make: string, model: string, sourc
 }
 
 // Estimate a realistic baseline market value based on brand premium and annual depreciation
-function estimateBaselinePrice(year: number, make: string): number {
+function estimateBaselinePrice(year: number, make: string, model: string, trim?: string | null): number {
   const currentYear = new Date().getFullYear();
   const age = Math.max(0, currentYear - year);
 
@@ -71,6 +73,34 @@ function estimateBaselinePrice(year: number, make: string): number {
     baseMSRP = 35000; // High-volume Standard ($35,000)
   }
 
+  // Adjust baseMSRP based on model and trim performance keywords
+  const combinedText = `${model} ${trim || ""}`.toLowerCase();
+  let trimMultiplier = 1.0;
+
+  if (combinedText.includes("gt3") || combinedText.includes("gt2") || combinedText.includes("gt4") || combinedText.includes(" gt3") || combinedText.includes(" gt2")) {
+    trimMultiplier = 2.2;
+  } else if (combinedText.includes("black series") || combinedText.includes("superleggera")) {
+    trimMultiplier = 2.0;
+  } else if (combinedText.includes("turbo s")) {
+    trimMultiplier = 1.8;
+  } else if (combinedText.includes("turbo") || combinedText.includes("zr1") || combinedText.includes("hellcat") || combinedText.includes("demon") || combinedText.includes("plaid")) {
+    trimMultiplier = 1.65;
+  } else if (combinedText.includes("z06") || combinedText.includes("gt500") || combinedText.includes("raptor") || combinedText.includes(" trx ")) {
+    trimMultiplier = 1.5;
+  } else if (
+    combinedText.includes("amg") || 
+    /\bm[34568]\b/.test(combinedText) ||
+    (makeLower.includes("bmw") && combinedText.startsWith("m"))
+  ) {
+    trimMultiplier = 1.45;
+  } else if (combinedText.includes("type r") || combinedText.includes("type s") || combinedText.includes("quadrifoglio") || combinedText.includes("rs ")) {
+    trimMultiplier = 1.35;
+  } else if (combinedText.includes("denali") || combinedText.includes("platinum") || combinedText.includes("limited") || combinedText.includes("luxury") || combinedText.includes("premium")) {
+    trimMultiplier = 1.25;
+  }
+
+  baseMSRP = baseMSRP * trimMultiplier;
+
   // Apply standard exponential depreciation: 10% depreciation per year for standard cars,
   // 6% for exotic/high-end vehicles which hold their value better.
   const isPremium = baseMSRP >= 120000;
@@ -96,13 +126,14 @@ export async function scrapeMarketPrices(
   year: number,
   make: string,
   model: string,
+  trim?: string | null,
   wishlistPriceCents?: number | null
 ): Promise<{ source: string; price: number; url: string }[]> {
-  const urls = getPlatformSearchUrls(year, make, model);
+  const urls = getPlatformSearchUrls(year, make, model, trim);
   
   // 1. Establish the baseline market price for this vehicle
   // Use wishlist price if user input it, otherwise compute a highly realistic age/make based baseline
-  const baseline = wishlistPriceCents || estimateBaselinePrice(year, make);
+  const baseline = wishlistPriceCents || estimateBaselinePrice(year, make, model, trim);
 
   // Helper to run a safe request with User-Agent headers
   const safeFetch = async (url: string) => {
@@ -128,7 +159,7 @@ export async function scrapeMarketPrices(
   // BRING A TRAILER (Auction Platform: ~95% baseline average)
   const fetchBringATrailer = async (): Promise<number> => {
     const html = await safeFetch(urls.bring_a_trailer);
-    const offset = getDeterministicOffset(year, make, model, "bring_a_trailer");
+    const offset = getDeterministicOffset(year, make, model, trim || null, "bring_a_trailer");
     const multiplier = 0.95 + offset;
     
     if (html) {
@@ -160,7 +191,7 @@ export async function scrapeMarketPrices(
   // CARS & BIDS (Auction Platform: ~92% baseline average)
   const fetchCarsAndBids = async (): Promise<number> => {
     const html = await safeFetch(urls.cars_and_bids);
-    const offset = getDeterministicOffset(year, make, model, "cars_and_bids");
+    const offset = getDeterministicOffset(year, make, model, trim || null, "cars_and_bids");
     const multiplier = 0.92 + offset;
 
     if (html) {
@@ -189,7 +220,7 @@ export async function scrapeMarketPrices(
   // CARMAX (Standard Haggle-free Retail: ~105% baseline average)
   const fetchCarMax = async (): Promise<number> => {
     // CarMax is fully client-side rendered and blocked by Akamai, using highly stable multiplier
-    const offset = getDeterministicOffset(year, make, model, "carmax");
+    const offset = getDeterministicOffset(year, make, model, trim || null, "carmax");
     const multiplier = 1.05 + offset;
     return Math.round(baseline * multiplier);
   };
@@ -197,7 +228,7 @@ export async function scrapeMarketPrices(
   // CARVANA (Convenience Online Retail: ~103% baseline average)
   const fetchCarvana = async (): Promise<number> => {
     // Carvana is heavily protected by Cloudflare, using highly stable multiplier
-    const offset = getDeterministicOffset(year, make, model, "carvana");
+    const offset = getDeterministicOffset(year, make, model, trim || null, "carvana");
     const multiplier = 1.03 + offset;
     return Math.round(baseline * multiplier);
   };
@@ -205,7 +236,7 @@ export async function scrapeMarketPrices(
   // CARGURUS (Aggregated Market Average: ~100% baseline average)
   const fetchCarGurus = async (): Promise<number> => {
     // CarGurus is highly protected by Akamai/Cloudflare, using highly stable multiplier
-    const offset = getDeterministicOffset(year, make, model, "cargurus");
+    const offset = getDeterministicOffset(year, make, model, trim || null, "cargurus");
     const multiplier = 1.00 + offset;
     return Math.round(baseline * multiplier);
   };

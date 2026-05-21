@@ -1,0 +1,40 @@
+
+> wishlist-mono@ dev /Users/jsumm/Documents/GitHub/WishlistMono
+> turbo dev
+
+• turbo 2.9.12
+
+   • Packages in scope: @wishlist/api, @wishlist/db, mobile, web
+   • Running dev in 4 packages
+   • Remote caching disabled
+
+mobile:dev: cache bypass, force executing 853c8e61860a9956
+web:dev: cache bypass, force executing f9e8361c3f0caf62
+mobile:dev: 
+mobile:dev: > mobile@0.1.0 dev /Users/jsumm/Documents/GitHub/WishlistMono/apps/mobile
+mobile:dev: > expo start --port 8083
+mobile:dev: 
+web:dev: 
+web:dev: > web@0.1.0 dev /Users/jsumm/Documents/GitHub/WishlistMono/apps/web
+web:dev: > next dev
+web:dev: 
+mobile:dev: Starting project at /Users/jsumm/Documents/GitHub/WishlistMono/apps/mobile
+mobile:dev: env: load .env
+mobile:dev: env: export EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY EXPO_PUBLIC_SERVER_URL
+web:dev:  ⚠ Port 3000 is in use, trying 3001 instead.
+web:dev:   ▲ Next.js 15.0.0
+web:dev:   - Local:        http://localhost:3001
+web:dev:   - Environments: .env.local
+web:dev: 
+web:dev:  ✓ Starting...
+mobile:dev: Starting Metro Bundler
+mobile:dev: Waiting on http://localhost:8083
+mobile:dev: Logs for your project will appear below.
+web:dev:  ✓ Ready in 1313ms
+Shutting down Turborepo tasks...
+web:dev: [?25h
+
+ Tasks:    0 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    4.819s 
+

@@ -50,6 +50,7 @@ export function VehicleList({ initialVehicles }: { initialVehicles: ExtendedVehi
                 id: vehicle.id,
                 make: vehicle.make,
                 model: vehicle.model,
+                trim: vehicle.trim ?? undefined,
                 year: vehicle.year,
                 price: vehicle.price ?? undefined,
                 imageUrl: vehicle.imageUrl ?? undefined,
@@ -77,7 +78,7 @@ export function VehicleList({ initialVehicles }: { initialVehicles: ExtendedVehi
 
                 <div className="flex-1 min-w-0">
                   <h3 className="text-xl font-bold truncate">
-                    {vehicle.year} {vehicle.make} {vehicle.model}
+                    {vehicle.year} {vehicle.make} {vehicle.model}{vehicle.trim ? ` ${vehicle.trim}` : ""}
                   </h3>
                   
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">

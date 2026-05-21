@@ -109,7 +109,7 @@ export default function Home() {
 
                     <View style={styles.cardContent}>
                       <Text style={styles.vehicleTitle} numberOfLines={1}>
-                        {item.year} {item.make} {item.model}
+                        {item.year} {item.make} {item.model}{item.trim ? ` ${item.trim}` : ""}
                       </Text>
                       
                       <View style={styles.pricingRow}>

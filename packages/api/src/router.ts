@@ -38,6 +38,31 @@ export const appRouter = router({
       };
     });
   }),
+  getModelsForMake: protectedProcedure
+    .input(z.object({ make: z.string(), year: z.number() }))
+    .query(async ({ input }) => {
+      try {
+        const makeClean = input.make.trim();
+        if (!makeClean) return [];
+
+        const url = `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${encodeURIComponent(makeClean)}/modelyear/${input.year}?format=json`;
+        const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) return [];
+
+        const data = await res.json();
+        const results = data.Results || [];
+        
+        // Filter unique model names and sort alphabetically
+        const modelNames = results
+          .map((r: any) => r.Model_Name as string)
+          .filter(Boolean);
+        
+        return Array.from(new Set(modelNames)).sort();
+      } catch (error) {
+        console.error("Failed to fetch models from NHTSA:", error);
+        return [];
+      }
+    }),
   addVehicle: protectedProcedure
     .input(insertVehicleSchema)
     .mutation(async ({ ctx, input }) => {
@@ -59,6 +84,7 @@ export const appRouter = router({
             insertedVehicle.year,
             insertedVehicle.make,
             insertedVehicle.model,
+            insertedVehicle.trim,
             insertedVehicle.price
           );
           
@@ -188,6 +214,7 @@ export const appRouter = router({
         vehicle.year,
         vehicle.make,
         vehicle.model,
+        vehicle.trim,
         vehicle.price
       );
 
