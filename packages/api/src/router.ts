@@ -24,12 +24,30 @@ export const appRouter = router({
       .from(marketPrices)
       .where(inArray(marketPrices.vehicleId, vehicleIds));
 
+    const pricesMap = new Map<number, typeof pricesData>();
+    for (const p of pricesData) {
+      if (p.vehicleId !== null) {
+        let arr = pricesMap.get(p.vehicleId);
+        if (!arr) {
+          arr = [];
+          pricesMap.set(p.vehicleId, arr);
+        }
+        arr.push(p);
+      }
+    }
+
     return data.map((v) => {
-      const vPrices = pricesData.filter((p) => p.vehicleId === v.id);
-      const validPrices = vPrices.filter((p) => p.price !== null) as { price: number }[];
-      const avgPrice = validPrices.length > 0
-        ? Math.round(validPrices.reduce((sum, p) => sum + p.price, 0) / validPrices.length) / 100
-        : null;
+      const vPrices = pricesMap.get(v.id) || [];
+      const validPrices = vPrices.filter((p) => p.price !== null) as {
+        price: number;
+      }[];
+      const avgPrice =
+        validPrices.length > 0
+          ? Math.round(
+              validPrices.reduce((sum, p) => sum + p.price, 0) /
+                validPrices.length,
+            ) / 100
+          : null;
 
       return {
         ...v,
@@ -51,12 +69,12 @@ export const appRouter = router({
 
         const data = await res.json();
         const results = data.Results || [];
-        
+
         // Filter unique model names and sort alphabetically
         const modelNames = results
           .map((r: any) => r.Model_Name as string)
           .filter(Boolean);
-        
+
         return Array.from(new Set(modelNames)).sort();
       } catch (error) {
         console.error("Failed to fetch models from NHTSA:", error);
@@ -85,20 +103,18 @@ export const appRouter = router({
             insertedVehicle.make,
             insertedVehicle.model,
             insertedVehicle.trim,
-            insertedVehicle.price
+            insertedVehicle.price,
           );
-          
-          await ctx.db
-            .insert(marketPrices)
-            .values(
-              scraped.map((s) => ({
-                vehicleId: insertedVehicle.id,
-                source: s.source,
-                price: s.price,
-                url: s.url,
-                lastFetchedAt: new Date(),
-              }))
-            );
+
+          await ctx.db.insert(marketPrices).values(
+            scraped.map((s) => ({
+              vehicleId: insertedVehicle.id,
+              source: s.source,
+              price: s.price,
+              url: s.url,
+              lastFetchedAt: new Date(),
+            })),
+          );
         } catch (error) {
           console.error("Failed to seed initial market prices:", error);
         }
@@ -180,7 +196,12 @@ export const appRouter = router({
       const [vehicle] = await ctx.db
         .select()
         .from(vehicles)
-        .where(and(eq(vehicles.id, input.vehicleId), eq(vehicles.userId, ctx.userId)))
+        .where(
+          and(
+            eq(vehicles.id, input.vehicleId),
+            eq(vehicles.userId, ctx.userId),
+          ),
+        )
         .limit(1);
 
       if (!vehicle) {
@@ -203,7 +224,12 @@ export const appRouter = router({
       const [vehicle] = await ctx.db
         .select()
         .from(vehicles)
-        .where(and(eq(vehicles.id, input.vehicleId), eq(vehicles.userId, ctx.userId)))
+        .where(
+          and(
+            eq(vehicles.id, input.vehicleId),
+            eq(vehicles.userId, ctx.userId),
+          ),
+        )
         .limit(1);
 
       if (!vehicle) {
@@ -215,7 +241,7 @@ export const appRouter = router({
         vehicle.make,
         vehicle.model,
         vehicle.trim,
-        vehicle.price
+        vehicle.price,
       );
 
       await ctx.db
@@ -231,7 +257,7 @@ export const appRouter = router({
             price: s.price,
             url: s.url,
             lastFetchedAt: new Date(),
-          }))
+          })),
         )
         .returning();
 
