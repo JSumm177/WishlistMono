@@ -7,6 +7,9 @@ import { scrapeMarketPrices } from "./services/scraper";
 
 const utapi = new UTApi();
 
+// Module-level cache for NHTSA API calls
+const nhtsaModelsCache = new Map<string, string[]>();
+
 export const appRouter = router({
   getVehicles: protectedProcedure.query(async ({ ctx }) => {
     const data = await ctx.db
@@ -63,6 +66,11 @@ export const appRouter = router({
         const makeClean = input.make.trim();
         if (!makeClean) return [];
 
+        const cacheKey = `${makeClean.toLowerCase()}-${input.year}`;
+        if (nhtsaModelsCache.has(cacheKey)) {
+          return nhtsaModelsCache.get(cacheKey)!;
+        }
+
         const url = `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformakeyear/make/${encodeURIComponent(makeClean)}/modelyear/${input.year}?format=json`;
         const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
         if (!res.ok) return [];
@@ -73,9 +81,13 @@ export const appRouter = router({
         // Filter unique model names and sort alphabetically
         const modelNames = results
           .map((r: any) => r.Model_Name as string)
-          .filter(Boolean);
+          .filter(Boolean) as string[];
 
-        return Array.from(new Set(modelNames)).sort();
+        const sortedUniqueModels = Array.from(new Set(modelNames)).sort();
+
+        nhtsaModelsCache.set(cacheKey, sortedUniqueModels);
+
+        return sortedUniqueModels;
       } catch (error) {
         console.error("Failed to fetch models from NHTSA:", error);
         return [];

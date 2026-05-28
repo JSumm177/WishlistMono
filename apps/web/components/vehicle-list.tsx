@@ -13,7 +13,11 @@ interface ExtendedVehicle extends Omit<Vehicle, "createdAt"> {
   averageMarketPrice: number | null;
 }
 
-export function VehicleList({ initialVehicles }: { initialVehicles: ExtendedVehicle[] }) {
+export function VehicleList({
+  initialVehicles,
+}: {
+  initialVehicles: ExtendedVehicle[];
+}) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [expandedIds, setExpandedIds] = useState<Record<number, boolean>>({});
 
@@ -78,9 +82,10 @@ export function VehicleList({ initialVehicles }: { initialVehicles: ExtendedVehi
 
                 <div className="flex-1 min-w-0">
                   <h3 className="text-xl font-bold truncate">
-                    {vehicle.year} {vehicle.make} {vehicle.model}{vehicle.trim ? ` ${vehicle.trim}` : ""}
+                    {vehicle.year} {vehicle.make} {vehicle.model}
+                    {vehicle.trim ? ` ${vehicle.trim}` : ""}
                   </h3>
-                  
+
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
                     {vehicle.price && (
                       <span className="text-zinc-900 dark:text-zinc-100 font-extrabold text-base">
@@ -88,14 +93,19 @@ export function VehicleList({ initialVehicles }: { initialVehicles: ExtendedVehi
                       </span>
                     )}
                     {vehicle.averageMarketPrice && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
-                        vehicle.price 
-                          ? vehicle.price < vehicle.averageMarketPrice 
-                            ? "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100/50 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                            : "bg-amber-50 dark:bg-amber-950/20 border border-amber-100/50 dark:border-amber-900/30 text-amber-700 dark:text-amber-400"
-                          : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
-                      }`}>
-                        Market Avg: ${Math.round(vehicle.averageMarketPrice).toLocaleString()}
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                          vehicle.price
+                            ? vehicle.price < vehicle.averageMarketPrice
+                              ? "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100/50 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                              : "bg-amber-50 dark:bg-amber-950/20 border border-amber-100/50 dark:border-amber-900/30 text-amber-700 dark:text-amber-400"
+                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                        }`}
+                      >
+                        Market Avg: $
+                        {Math.round(
+                          vehicle.averageMarketPrice,
+                        ).toLocaleString()}
                       </span>
                     )}
                   </div>
@@ -105,7 +115,9 @@ export function VehicleList({ initialVehicles }: { initialVehicles: ExtendedVehi
                     className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-700/80 rounded-lg text-[10px] font-extrabold text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50 transition border border-zinc-200/50 dark:border-zinc-700/50 mt-2"
                   >
                     <TrendingUp size={12} className="text-blue-500" />
-                    {expandedIds[vehicle.id] ? "Hide Market Analysis" : "Show Market Analysis"}
+                    {expandedIds[vehicle.id]
+                      ? "Hide Market Analysis"
+                      : "Show Market Analysis"}
                   </button>
                 </div>
 

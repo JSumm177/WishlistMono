@@ -57,12 +57,19 @@ const BRAND_STYLES: Record<
   },
 };
 
-export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps) {
+export function MarketAnalysis({
+  vehicleId,
+  wishlistPrice,
+}: MarketAnalysisProps) {
   const utils = trpc.useUtils();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch prices from server
-  const { data: prices, isLoading, error } = trpc.getMarketPrices.useQuery({ vehicleId });
+  const {
+    data: prices,
+    isLoading,
+    error,
+  } = trpc.getMarketPrices.useQuery({ vehicleId });
 
   // Refresh price mutation
   const refreshPrices = trpc.refreshMarketPrices.useMutation({
@@ -98,7 +105,9 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="small" color="#2563eb" />
-        <Text style={styles.loadingText}>Analyzing vehicle market prices...</Text>
+        <Text style={styles.loadingText}>
+          Analyzing vehicle market prices...
+        </Text>
       </View>
     );
   }
@@ -106,17 +115,33 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
   if (error || !prices || prices.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Ionicons name="help-circle-outline" size={32} color="#9ca3af" style={styles.emptyIcon} />
-        <Text style={styles.emptyText}>No pricing history found for this vehicle.</Text>
+        <Ionicons
+          name="help-circle-outline"
+          size={32}
+          color="#9ca3af"
+          style={styles.emptyIcon}
+        />
+        <Text style={styles.emptyText}>
+          No pricing history found for this vehicle.
+        </Text>
         <TouchableOpacity
           onPress={handleRefresh}
           disabled={isRefreshing}
           style={[styles.primaryButton, isRefreshing && styles.disabledButton]}
         >
           {isRefreshing ? (
-            <ActivityIndicator size="small" color="white" style={styles.buttonSpinner} />
+            <ActivityIndicator
+              size="small"
+              color="white"
+              style={styles.buttonSpinner}
+            />
           ) : (
-            <Ionicons name="sync-outline" size={14} color="white" style={styles.buttonIcon} />
+            <Ionicons
+              name="sync-outline"
+              size={14}
+              color="white"
+              style={styles.buttonIcon}
+            />
           )}
           <Text style={styles.primaryButtonText}>Analyze Market Value</Text>
         </TouchableOpacity>
@@ -134,7 +159,9 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
   const maxPrice = priceValues.length > 0 ? Math.max(...priceValues) : 0;
   const averagePrice =
     priceValues.length > 0
-      ? Math.round(priceValues.reduce((sum, p) => sum + p, 0) / priceValues.length)
+      ? Math.round(
+          priceValues.reduce((sum, p) => sum + p, 0) / priceValues.length,
+        )
       : null;
 
   // bargain calculations
@@ -172,7 +199,9 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
           <Text style={styles.headerSubtitle}>MARKET ANALYSIS INDEX</Text>
           <View style={styles.avgPriceContainer}>
             <Text style={styles.avgPriceText}>
-              {averagePrice ? `$${averagePrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "N/A"}
+              {averagePrice
+                ? `$${averagePrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                : "N/A"}
             </Text>
             <Text style={styles.avgPriceLabel}>Market Avg</Text>
           </View>
@@ -199,7 +228,12 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
         <View style={styles.badgeContainer}>
           {dealType === "good" && (
             <View style={[styles.badge, styles.goodBadge]}>
-              <Ionicons name="trending-down-outline" size={14} color="#047857" style={styles.badgeIcon} />
+              <Ionicons
+                name="trending-down-outline"
+                size={14}
+                color="#047857"
+                style={styles.badgeIcon}
+              />
               <Text style={[styles.badgeText, styles.goodBadgeText]}>
                 Good Deal ({Math.abs(priceDiffPercent).toFixed(1)}% Below Avg)
               </Text>
@@ -207,7 +241,12 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
           )}
           {dealType === "fair" && (
             <View style={[styles.badge, styles.fairBadge]}>
-              <Ionicons name="information-circle-outline" size={14} color="#374151" style={styles.badgeIcon} />
+              <Ionicons
+                name="information-circle-outline"
+                size={14}
+                color="#374151"
+                style={styles.badgeIcon}
+              />
               <Text style={[styles.badgeText, styles.fairBadgeText]}>
                 Fair Price (Near Market Avg)
               </Text>
@@ -215,7 +254,12 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
           )}
           {dealType === "premium" && (
             <View style={[styles.badge, styles.premiumBadge]}>
-              <Ionicons name="trending-up-outline" size={14} color="#b45309" style={styles.badgeIcon} />
+              <Ionicons
+                name="trending-up-outline"
+                size={14}
+                color="#b45309"
+                style={styles.badgeIcon}
+              />
               <Text style={[styles.badgeText, styles.premiumBadgeText]}>
                 Premium Price ({priceDiffPercent.toFixed(1)}% Above Avg)
               </Text>
@@ -318,7 +362,9 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
               </View>
 
               <Text style={styles.platformPrice}>
-                {p.price ? `$${p.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "Searching"}
+                {p.price
+                  ? `$${p.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                  : "Searching"}
               </Text>
 
               {p.url ? (

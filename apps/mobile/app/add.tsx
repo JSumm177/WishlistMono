@@ -24,17 +24,65 @@ import { Ionicons } from "@expo/vector-icons";
 import { useImageUploader } from "../utils/uploadthing";
 
 const POPULAR_MAKES = [
-  "Acura", "Alfa Romeo", "Alpine", "Aston Martin", "Audi", "Bentley", "BMW", "Bugatti", "Buick", "Cadillac",
-  "Chevrolet", "Chrysler", "Dodge", "Ferrari", "Fiat", "Ford", "Genesis", "GMC", "Honda", "Hyundai",
-  "Infiniti", "Jaguar", "Jeep", "Kia", "Lamborghini", "Land Rover", "Lexus", "Lincoln", "Lotus", "Lucid",
-  "Maserati", "Mazda", "McLaren", "Mercedes-Benz", "MINI", "Mitsubishi", "Nissan", "Polestar", "Pontiac",
-  "Porsche", "Ram", "Rivian", "Rolls-Royce", "Saab", "Saturn", "Scion", "Subaru", "Tesla", "Toyota",
-  "Volkswagen", "Volvo"
+  "Acura",
+  "Alfa Romeo",
+  "Alpine",
+  "Aston Martin",
+  "Audi",
+  "Bentley",
+  "BMW",
+  "Bugatti",
+  "Buick",
+  "Cadillac",
+  "Chevrolet",
+  "Chrysler",
+  "Dodge",
+  "Ferrari",
+  "Fiat",
+  "Ford",
+  "Genesis",
+  "GMC",
+  "Honda",
+  "Hyundai",
+  "Infiniti",
+  "Jaguar",
+  "Jeep",
+  "Kia",
+  "Lamborghini",
+  "Land Rover",
+  "Lexus",
+  "Lincoln",
+  "Lotus",
+  "Lucid",
+  "Maserati",
+  "Mazda",
+  "McLaren",
+  "Mercedes-Benz",
+  "MINI",
+  "Mitsubishi",
+  "Nissan",
+  "Polestar",
+  "Pontiac",
+  "Porsche",
+  "Ram",
+  "Rivian",
+  "Rolls-Royce",
+  "Saab",
+  "Saturn",
+  "Scion",
+  "Subaru",
+  "Tesla",
+  "Toyota",
+  "Volkswagen",
+  "Volvo",
 ];
 
 const startYear = 1940;
 const currentYear = new Date().getFullYear();
-const YEARS = Array.from({ length: currentYear + 2 - startYear }, (_, i) => currentYear + 1 - i);
+const YEARS = Array.from(
+  { length: currentYear + 2 - startYear },
+  (_, i) => currentYear + 1 - i,
+);
 
 interface PickerModalProps {
   visible: boolean;
@@ -45,10 +93,26 @@ interface PickerModalProps {
   onSelect: (value: any) => void;
 }
 
-function PickerModal({ visible, onClose, title, options, selectedValue, onSelect }: PickerModalProps) {
+function PickerModal({
+  visible,
+  onClose,
+  title,
+  options,
+  selectedValue,
+  onSelect,
+}: PickerModalProps) {
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <TouchableOpacity
+        style={styles.modalOverlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>{title}</Text>
@@ -63,7 +127,7 @@ function PickerModal({ visible, onClose, title, options, selectedValue, onSelect
               <TouchableOpacity
                 style={[
                   styles.modalOption,
-                  item === selectedValue && styles.modalOptionSelected
+                  item === selectedValue && styles.modalOptionSelected,
                 ]}
                 onPress={() => {
                   onSelect(item);
@@ -73,7 +137,7 @@ function PickerModal({ visible, onClose, title, options, selectedValue, onSelect
                 <Text
                   style={[
                     styles.modalOptionText,
-                    item === selectedValue && styles.modalOptionTextSelected
+                    item === selectedValue && styles.modalOptionTextSelected,
                   ]}
                 >
                   {item}
@@ -148,10 +212,17 @@ export default function AddVehicle() {
   });
 
   // Fetch models dynamically based on selected Year & Make from back-end (NHTSA API proxy)
-  const { data: nhtsaModelsData = [], isLoading: isLoadingModels } = trpc.getModelsForMake.useQuery(
-    { make: watchMake, year: watchYear },
-    { enabled: !!watchMake && watchMake !== "Other" && !customMake && !isNaN(watchYear) }
-  );
+  const { data: nhtsaModelsData = [], isLoading: isLoadingModels } =
+    trpc.getModelsForMake.useQuery(
+      { make: watchMake, year: watchYear },
+      {
+        enabled:
+          !!watchMake &&
+          watchMake !== "Other" &&
+          !customMake &&
+          !isNaN(watchYear),
+      },
+    );
   const nhtsaModels = nhtsaModelsData as string[];
 
   const pickImage = async () => {
@@ -259,10 +330,19 @@ export default function AddVehicle() {
       <Text style={styles.label}>Make</Text>
       {!customMake ? (
         <TouchableOpacity
-          style={[styles.selectTrigger, errors.make && styles.selectTriggerError]}
+          style={[
+            styles.selectTrigger,
+            errors.make && styles.selectTriggerError,
+          ]}
           onPress={() => setMakePickerVisible(true)}
         >
-          <Text style={watchMake ? styles.selectTriggerText : styles.selectTriggerPlaceholder}>
+          <Text
+            style={
+              watchMake
+                ? styles.selectTriggerText
+                : styles.selectTriggerPlaceholder
+            }
+          >
             {watchMake || "Select Make"}
           </Text>
           <Ionicons name="chevron-down" size={20} color="#6b7280" />
@@ -274,7 +354,11 @@ export default function AddVehicle() {
             name="make"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={[styles.input, styles.inputWithButton, errors.make && styles.inputError]}
+                style={[
+                  styles.input,
+                  styles.inputWithButton,
+                  errors.make && styles.inputError,
+                ]}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -306,17 +390,23 @@ export default function AddVehicle() {
           style={[
             styles.selectTrigger,
             (!watchMake || isLoadingModels) && styles.selectTriggerDisabled,
-            errors.model && styles.selectTriggerError
+            errors.model && styles.selectTriggerError,
           ]}
           onPress={() => setModelPickerVisible(true)}
           disabled={!watchMake || isLoadingModels}
         >
-          <Text style={watchModel ? styles.selectTriggerText : styles.selectTriggerPlaceholder}>
+          <Text
+            style={
+              watchModel
+                ? styles.selectTriggerText
+                : styles.selectTriggerPlaceholder
+            }
+          >
             {isLoadingModels
               ? "Loading models..."
               : !watchMake
-              ? "Select Make first"
-              : watchModel || "Select Model"}
+                ? "Select Make first"
+                : watchModel || "Select Model"}
           </Text>
           <Ionicons name="chevron-down" size={20} color="#6b7280" />
         </TouchableOpacity>
@@ -327,7 +417,11 @@ export default function AddVehicle() {
             name="model"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={[styles.input, styles.inputWithButton, errors.model && styles.inputError]}
+                style={[
+                  styles.input,
+                  styles.inputWithButton,
+                  errors.model && styles.inputError,
+                ]}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}

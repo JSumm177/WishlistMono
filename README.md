@@ -72,14 +72,18 @@ pnpm --filter @wishlist/db db:push
 #### Run the Full Stack (Web + Mobile Dev Server):
 
 From the root directory, running:
+
 ```bash
 pnpm dev
 ```
+
 will concurrently boot up:
+
 - **Web App**: [http://localhost:3000](http://localhost:3000)
 - **Mobile Metro Bundler**: Port `8083` (to avoid clashing with RefWikiMono on `8081`)
 
-*If you only want to run the web app, you can run:*
+_If you only want to run the web app, you can run:_
+
 ```bash
 pnpm --filter web dev
 ```
@@ -87,6 +91,7 @@ pnpm --filter web dev
 #### Run the Mobile App Individually:
 
 If you prefer to start the mobile app dev server manually on the custom port:
+
 ```bash
 cd apps/mobile
 pnpm start --clear
@@ -105,17 +110,21 @@ To manually verify that everything functions correctly across the entire stack, 
 ### 1. Fire up the Core Development Servers
 
 From the root of the project, start all local development environments:
+
 ```bash
 pnpm dev
 ```
+
 This boots up the **Next.js Web App / tRPC API Server** on [http://localhost:3000](http://localhost:3000) and the **Expo Metro Bundler** on port `8083`.
 
 ### 2. Launch the Web Environment
+
 1. Navigate to [http://localhost:3000](http://localhost:3000) in your web browser.
 2. Sign in or register an account.
 3. Verify adding, editing, and deleting vehicles. Confirm that the Make/Model dropdown options adapt dynamically when changing the modelyear.
 
 ### 3. Launch the iOS Test Environment (Simulator)
+
 1. Ensure Xcode is installed.
 2. In the terminal window running the Expo Metro Bundler, press **`i`** to trigger the iOS simulator, or run directly:
    ```bash
@@ -125,6 +134,7 @@ This boots up the **Next.js Web App / tRPC API Server** on [http://localhost:300
 4. Sign in using the same credentials as Web and check list synchronization.
 
 ### 4. Launch the Android Test Environment (Emulator)
+
 1. Ensure Android Studio is installed and an AVD (Android Virtual Device) is running.
 2. In the Expo Metro Bundler terminal window, press **`a`** to load the app in the Android emulator, or run directly:
    ```bash

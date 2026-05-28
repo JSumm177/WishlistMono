@@ -2,7 +2,14 @@
 
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
-import { RefreshCw, ExternalLink, Info, TrendingUp, TrendingDown, HelpCircle } from "lucide-react";
+import {
+  RefreshCw,
+  ExternalLink,
+  Info,
+  TrendingUp,
+  TrendingDown,
+  HelpCircle,
+} from "lucide-react";
 
 interface MarketAnalysisProps {
   vehicleId: number;
@@ -51,12 +58,19 @@ const BRAND_STYLES: Record<
   },
 };
 
-export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps) {
+export function MarketAnalysis({
+  vehicleId,
+  wishlistPrice,
+}: MarketAnalysisProps) {
   const utils = trpc.useUtils();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch prices from server
-  const { data: prices, isLoading, error } = trpc.getMarketPrices.useQuery({ vehicleId });
+  const {
+    data: prices,
+    isLoading,
+    error,
+  } = trpc.getMarketPrices.useQuery({ vehicleId });
 
   // Refresh price mutation
   const refreshPrices = trpc.refreshMarketPrices.useMutation({
@@ -80,7 +94,9 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
     return (
       <div className="flex flex-col items-center justify-center p-8 space-y-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-100 dark:border-zinc-800/80">
         <RefreshCw size={24} className="text-blue-500 animate-spin" />
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">Analyzing vehicle market prices...</p>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          Analyzing vehicle market prices...
+        </p>
       </div>
     );
   }
@@ -109,22 +125,24 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
     .filter((p) => p.price !== null)
     .map((p) => ({ ...p, price: p.price as number }));
   const priceValues = validPrices.map((p) => p.price);
-  
+
   const minPrice = priceValues.length > 0 ? Math.min(...priceValues) : 0;
   const maxPrice = priceValues.length > 0 ? Math.max(...priceValues) : 0;
   const averagePrice =
     priceValues.length > 0
-      ? Math.round(priceValues.reduce((sum, p) => sum + p, 0) / priceValues.length)
+      ? Math.round(
+          priceValues.reduce((sum, p) => sum + p, 0) / priceValues.length,
+        )
       : null;
 
   // bargain calculations
   let priceDiffPercent = 0;
   let dealType: "good" | "fair" | "premium" | "unknown" = "unknown";
-  
+
   if (wishlistPrice && averagePrice) {
     const diff = wishlistPrice - averagePrice;
     priceDiffPercent = (diff / averagePrice) * 100;
-    
+
     if (priceDiffPercent < -3) {
       dealType = "good";
     } else if (priceDiffPercent <= 3) {
@@ -145,7 +163,6 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
 
   return (
     <div className="mt-4 p-5 bg-zinc-50 dark:bg-zinc-900/60 rounded-xl border border-zinc-100 dark:border-zinc-800/80 shadow-inner space-y-6">
-      
       {/* 1. Header Summary row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200/50 dark:border-zinc-800/50 pb-4">
         <div>
@@ -154,9 +171,13 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
           </span>
           <div className="flex items-baseline gap-2 mt-1">
             <h4 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">
-              {averagePrice ? `$${averagePrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "N/A"}
+              {averagePrice
+                ? `$${averagePrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                : "N/A"}
             </h4>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">Market Avg</span>
+            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+              Market Avg
+            </span>
           </div>
         </div>
 
@@ -166,7 +187,7 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
             {dealType === "good" && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold shadow-sm">
                 <TrendingDown size={14} />
-                Good Deal ({(Math.abs(priceDiffPercent)).toFixed(1)}% Below Avg)
+                Good Deal ({Math.abs(priceDiffPercent).toFixed(1)}% Below Avg)
               </div>
             )}
             {dealType === "fair" && (
@@ -178,7 +199,7 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
             {dealType === "premium" && (
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-bold shadow-sm">
                 <TrendingUp size={14} />
-                Premium Price ({(priceDiffPercent).toFixed(1)}% Above Avg)
+                Premium Price ({priceDiffPercent.toFixed(1)}% Above Avg)
               </div>
             )}
           </div>
@@ -198,9 +219,13 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
       {priceValues.length > 1 && (
         <div className="space-y-4">
           <div className="flex justify-between items-center text-xs text-zinc-400 dark:text-zinc-500 font-medium px-1">
-            <span>Cheapest ({minPrice ? `$${(minPrice).toLocaleString()}` : "N/A"})</span>
+            <span>
+              Cheapest ({minPrice ? `$${minPrice.toLocaleString()}` : "N/A"})
+            </span>
             <span>Market Spread</span>
-            <span>Premium ({maxPrice ? `$${(maxPrice).toLocaleString()}` : "N/A"})</span>
+            <span>
+              Premium ({maxPrice ? `$${maxPrice.toLocaleString()}` : "N/A"})
+            </span>
           </div>
 
           <div className="relative h-4 bg-gradient-to-r from-emerald-500/20 via-amber-500/10 to-red-500/20 rounded-full border border-zinc-200/50 dark:border-zinc-800/80">
@@ -223,7 +248,7 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
                   />
                   {/* Tooltip on hover */}
                   <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none -bottom-8 left-1/2 -translate-x-1/2 bg-zinc-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-lg whitespace-nowrap z-20">
-                    {brand?.name || p.source}: ${(p.price).toLocaleString()}
+                    {brand?.name || p.source}: ${p.price.toLocaleString()}
                   </div>
                 </div>
               );
@@ -238,7 +263,7 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
                 {/* Pointer marker */}
                 <div className="w-1.5 h-10 bg-blue-600 dark:bg-blue-400 rounded-full shadow-lg border border-white dark:border-zinc-950 z-10" />
                 <div className="absolute -top-6 bg-blue-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-md shadow-md whitespace-nowrap z-20">
-                  Target: ${(wishlistPrice).toLocaleString()}
+                  Target: ${wishlistPrice.toLocaleString()}
                 </div>
               </div>
             )}
@@ -266,7 +291,9 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
             >
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <span className={`text-[10px] font-extrabold tracking-wider uppercase ${brand.text}`}>
+                  <span
+                    className={`text-[10px] font-extrabold tracking-wider uppercase ${brand.text}`}
+                  >
                     {brand.name}
                   </span>
                   <span className="text-[8px] bg-zinc-200/50 dark:bg-zinc-800/80 text-zinc-500 dark:text-zinc-400 px-1 rounded-sm uppercase font-semibold">
@@ -274,7 +301,9 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
                   </span>
                 </div>
                 <h5 className="text-lg font-extrabold text-zinc-800 dark:text-zinc-100">
-                  {p.price ? `$${(p.price).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : "Searching"}
+                  {p.price
+                    ? `$${p.price.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                    : "Searching"}
                 </h5>
               </div>
 
@@ -291,7 +320,6 @@ export function MarketAnalysis({ vehicleId, wishlistPrice }: MarketAnalysisProps
           );
         })}
       </div>
-      
     </div>
   );
 }

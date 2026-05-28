@@ -21,12 +21,57 @@ interface VehicleFormProps {
 }
 
 const POPULAR_MAKES = [
-  "Acura", "Alfa Romeo", "Alpine", "Aston Martin", "Audi", "Bentley", "BMW", "Bugatti", "Buick", "Cadillac",
-  "Chevrolet", "Chrysler", "Dodge", "Ferrari", "Fiat", "Ford", "Genesis", "GMC", "Honda", "Hyundai",
-  "Infiniti", "Jaguar", "Jeep", "Kia", "Lamborghini", "Land Rover", "Lexus", "Lincoln", "Lotus", "Lucid",
-  "Maserati", "Mazda", "McLaren", "Mercedes-Benz", "MINI", "Mitsubishi", "Nissan", "Polestar", "Pontiac",
-  "Porsche", "Ram", "Rivian", "Rolls-Royce", "Saab", "Saturn", "Scion", "Subaru", "Tesla", "Toyota",
-  "Volkswagen", "Volvo"
+  "Acura",
+  "Alfa Romeo",
+  "Alpine",
+  "Aston Martin",
+  "Audi",
+  "Bentley",
+  "BMW",
+  "Bugatti",
+  "Buick",
+  "Cadillac",
+  "Chevrolet",
+  "Chrysler",
+  "Dodge",
+  "Ferrari",
+  "Fiat",
+  "Ford",
+  "Genesis",
+  "GMC",
+  "Honda",
+  "Hyundai",
+  "Infiniti",
+  "Jaguar",
+  "Jeep",
+  "Kia",
+  "Lamborghini",
+  "Land Rover",
+  "Lexus",
+  "Lincoln",
+  "Lotus",
+  "Lucid",
+  "Maserati",
+  "Mazda",
+  "McLaren",
+  "Mercedes-Benz",
+  "MINI",
+  "Mitsubishi",
+  "Nissan",
+  "Polestar",
+  "Pontiac",
+  "Porsche",
+  "Ram",
+  "Rivian",
+  "Rolls-Royce",
+  "Saab",
+  "Saturn",
+  "Scion",
+  "Subaru",
+  "Tesla",
+  "Toyota",
+  "Volkswagen",
+  "Volvo",
 ];
 
 export function VehicleForm({
@@ -43,33 +88,38 @@ export function VehicleForm({
 
   const startYear = 1940;
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear + 2 - startYear }, (_, i) => currentYear + 1 - i);
+  const years = Array.from(
+    { length: currentYear + 2 - startYear },
+    (_, i) => currentYear + 1 - i,
+  );
 
   // Determine if initial make is part of POPULAR_MAKES
-  const initMakeInList = initialData ? POPULAR_MAKES.includes(initialData.make) : true;
+  const initMakeInList = initialData
+    ? POPULAR_MAKES.includes(initialData.make)
+    : true;
 
   // React State variables to control Year, Make, Model selections
   const [selectedYear, setSelectedYear] = useState<number>(
-    initialData?.year || new Date().getFullYear()
+    initialData?.year || new Date().getFullYear(),
   );
   const [selectedMake, setSelectedMake] = useState<string>(
-    initialData ? (initMakeInList ? initialData.make : "Other") : ""
+    initialData ? (initMakeInList ? initialData.make : "Other") : "",
   );
   const [customMake, setCustomMake] = useState<boolean>(
-    initialData ? !initMakeInList : false
+    initialData ? !initMakeInList : false,
   );
   const [customMakeVal, setCustomMakeVal] = useState<string>(
-    initialData ? (!initMakeInList ? initialData.make : "") : ""
+    initialData ? (!initMakeInList ? initialData.make : "") : "",
   );
 
   const [selectedModel, setSelectedModel] = useState<string>(
-    initialData ? (initMakeInList ? initialData.model : "Other") : ""
+    initialData ? (initMakeInList ? initialData.model : "Other") : "",
   );
   const [customModel, setCustomModel] = useState<boolean>(
-    initialData ? !initMakeInList : false
+    initialData ? !initMakeInList : false,
   );
   const [customModelVal, setCustomModelVal] = useState<string>(
-    initialData ? (!initMakeInList ? initialData.model : "") : ""
+    initialData ? (!initMakeInList ? initialData.model : "") : "",
   );
 
   const {
@@ -100,15 +150,24 @@ export function VehicleForm({
   const utils = trpc.useUtils();
 
   // Fetch models dynamically frombackend query (proxies NHTSA API)
-  const { data: nhtsaModelsData = [], isLoading: isLoadingModels } = trpc.getModelsForMake.useQuery(
-    { make: selectedMake, year: selectedYear },
-    { enabled: !!selectedMake && selectedMake !== "Other" && !isNaN(selectedYear) }
-  );
+  const { data: nhtsaModelsData = [], isLoading: isLoadingModels } =
+    trpc.getModelsForMake.useQuery(
+      { make: selectedMake, year: selectedYear },
+      {
+        enabled:
+          !!selectedMake && selectedMake !== "Other" && !isNaN(selectedYear),
+      },
+    );
   const nhtsaModels = nhtsaModelsData as string[];
 
   // Sync loaded models for editing fallback
   useEffect(() => {
-    if (initialData && selectedMake && selectedMake !== "Other" && nhtsaModels.length > 0) {
+    if (
+      initialData &&
+      selectedMake &&
+      selectedMake !== "Other" &&
+      nhtsaModels.length > 0
+    ) {
       const hasModel = nhtsaModels.includes(initialData.model);
       if (!hasModel && selectedModel !== "Other") {
         setCustomModel(true);
@@ -187,7 +246,9 @@ export function VehicleForm({
           </div>
         ) : (
           <div className="text-center py-4">
-            <p className="text-sm font-medium text-gray-500 dark:text-zinc-400 mb-2">Upload vehicle photo</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-zinc-400 mb-2">
+              Upload vehicle photo
+            </p>
             <UploadButton
               endpoint="vehicleImage"
               onClientUploadComplete={(res) => {
@@ -230,7 +291,9 @@ export function VehicleForm({
             className="w-full p-2.5 border border-gray-300 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
           >
             {years.map((y) => (
-              <option key={y} value={y}>{y}</option>
+              <option key={y} value={y}>
+                {y}
+              </option>
             ))}
           </select>
           {errors.year && (
@@ -287,7 +350,9 @@ export function VehicleForm({
             >
               <option value="">Select Make</option>
               {POPULAR_MAKES.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m}>
+                  {m}
+                </option>
               ))}
               <option value="Other">Other (Type in...)</option>
             </select>
@@ -354,11 +419,13 @@ export function VehicleForm({
                 {isLoadingModels
                   ? "Loading models..."
                   : !selectedMake
-                  ? "Select Make first"
-                  : "Select Model"}
+                    ? "Select Make first"
+                    : "Select Model"}
               </option>
               {nhtsaModels.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m}>
+                  {m}
+                </option>
               ))}
               {selectedMake && (
                 <option value="Other">Other (Type in...)</option>

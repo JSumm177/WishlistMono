@@ -19,9 +19,13 @@ function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { getToken } = useAuth();
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() => {
-    const rawUrl = process.env.EXPO_PUBLIC_SERVER_URL || "http://localhost:3000";
-    const serverUrl = Platform.OS === "android" ? rawUrl.replace("localhost", "10.0.2.2") : rawUrl;
-    
+    const rawUrl =
+      process.env.EXPO_PUBLIC_SERVER_URL || "http://localhost:3000";
+    const serverUrl =
+      Platform.OS === "android"
+        ? rawUrl.replace("localhost", "10.0.2.2")
+        : rawUrl;
+
     return trpc.createClient({
       links: [
         httpBatchLink({

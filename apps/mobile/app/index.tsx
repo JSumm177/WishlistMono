@@ -78,11 +78,11 @@ export default function Home() {
               const isExpanded = !!expandedIds[item.id];
               const avgMarket = item.averageMarketPrice;
               const price = item.price;
-              
+
               // Decide pill styles
               let pillStyle = styles.grayMarketPill;
               let pillTextStyle = styles.grayMarketPillText;
-              
+
               if (avgMarket && price) {
                 if (price < avgMarket) {
                   pillStyle = styles.greenMarketPill;
@@ -103,25 +103,32 @@ export default function Home() {
                       />
                     ) : (
                       <View style={styles.imagePlaceholder}>
-                        <Ionicons name="car-outline" size={24} color="#9ca3af" />
+                        <Ionicons
+                          name="car-outline"
+                          size={24}
+                          color="#9ca3af"
+                        />
                       </View>
                     )}
 
                     <View style={styles.cardContent}>
                       <Text style={styles.vehicleTitle} numberOfLines={1}>
-                        {item.year} {item.make} {item.model}{item.trim ? ` ${item.trim}` : ""}
+                        {item.year} {item.make} {item.model}
+                        {item.trim ? ` ${item.trim}` : ""}
                       </Text>
-                      
+
                       <View style={styles.pricingRow}>
                         {price && (
                           <Text style={styles.vehiclePrice}>
                             ${price.toLocaleString()}
                           </Text>
                         )}
-                        
+
                         {avgMarket ? (
                           <View style={[styles.marketPill, pillStyle]}>
-                            <Text style={[styles.marketPillText, pillTextStyle]}>
+                            <Text
+                              style={[styles.marketPillText, pillTextStyle]}
+                            >
                               Avg: ${Math.round(avgMarket).toLocaleString()}
                             </Text>
                           </View>
@@ -150,7 +157,11 @@ export default function Home() {
                         onPress={() => handleDelete(item.id)}
                         style={styles.actionButton}
                       >
-                        <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                        <Ionicons
+                          name="trash-outline"
+                          size={20}
+                          color="#ef4444"
+                        />
                       </TouchableOpacity>
                     </View>
                   </View>
